@@ -23,6 +23,7 @@
 \******************************************************************************/
 
 #include "client.h"
+#include <qdebug.h>
 
 
 /* Implementation *************************************************************/
@@ -1244,6 +1245,8 @@ int CClient::EstimatedOverallDelay ( const int iPingTimeMs, QString& strDelayDet
            QString("%1 sound card").arg(fTotalSoundCardDelayMs,6,'f',1,' ') << Qt::endl <<
            QString("(%1 sound card i/o)").arg(fSoundCardInputOutputLatencyMs,6,'f',1,' ') << Qt::endl <<
                 "";
+
+    qDebug().noquote() << strDelayDetailed;
 
     return MathUtils::round ( fTotalBufferDelayMs + iPingTimeMs );
 }
