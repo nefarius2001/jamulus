@@ -716,6 +716,7 @@ void CClientSettingsDlg::SetPingTimeResult ( const int                         i
         lblPingTimeValue->setText     ( QString().setNum ( iPingTime ) + " ms" );
         lblOverallDelayValue->setText ( QString().setNum ( iOverallDelayMs ) + " ms" );
         lblOverallDelayValue->setToolTip(strDelayDetailed);
+        lblDelayDetails->setText(strDelayDetailed);
     }
 
     // update upstream rate information label (note that we update this together
