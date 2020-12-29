@@ -1237,13 +1237,15 @@ int CClient::EstimatedOverallDelay ( const int iPingTimeMs, QString& strDelayDet
 
     strDelayDetailed.clear();
     QTextStream streamDelayDetailed(&strDelayDetailed);
-    streamDelayDetailed << "EstimatedOverallDelay [ms]:" << fTotalBufferDelayMs << Qt::endl <<
-           QString("%1 ping").arg(float(iPingTimeMs),6,'f',1,' ') << Qt::endl <<
-           QString("%1 buffer jitterBuffer (lokal+server)").arg(fTotalJitterBufferDelayMs,6,'f',1,' ') << Qt::endl <<
-           QString("%1 buffer fill network packets").arg(fDelayToFillNetworkPacketsMs,6,'f',1,' ') << Qt::endl <<
-           QString("%1 codec (OPUS, additional)").arg(fAdditionalAudioCodecDelayMs,6,'f',1,' ') << Qt::endl <<
-           QString("%1 sound card").arg(fTotalSoundCardDelayMs,6,'f',1,' ') << Qt::endl <<
-           QString("(%1 sound card i/o)").arg(fSoundCardInputOutputLatencyMs,6,'f',1,' ') << Qt::endl <<
+    streamDelayDetailed << "EstimatedDelay:" << Qt::endl <<
+           QString("%1 ms ping").arg(float(iPingTimeMs),6,'f',1,' ') << Qt::endl <<
+           QString("%1 ms buffer total").arg(fTotalBufferDelayMs,6,'f',1,' ') << Qt::endl <<
+           QString("  buffers:") << Qt::endl <<
+           QString("  %1 ms jitterBuffer (lokal+server)").arg(fTotalJitterBufferDelayMs,6,'f',1,' ') << Qt::endl <<
+           QString("  %1 ms fill network packets").arg(fDelayToFillNetworkPacketsMs,6,'f',1,' ') << Qt::endl <<
+           QString("  %1 ms codec (OPUS, additional)").arg(fAdditionalAudioCodecDelayMs,6,'f',1,' ') << Qt::endl <<
+           QString("  %1 ms sound card").arg(fTotalSoundCardDelayMs,6,'f',1,' ') << Qt::endl <<
+           QString("  (%1 sound card i/o)").arg(fSoundCardInputOutputLatencyMs,6,'f',1,' ') << Qt::endl <<
                 "";
 
     qDebug().noquote() << strDelayDetailed;

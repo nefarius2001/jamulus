@@ -561,6 +561,11 @@
       </item>
       <item>
        <widget class="QLabel" name="lblDelayDetails">
+        <property name="font">
+         <font>
+          <family>Courier New</family>
+         </font>
+        </property>
         <property name="text">
          <string>Delay-Details</string>
         </property>
