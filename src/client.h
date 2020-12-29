@@ -264,7 +264,7 @@ public:
     void CreateCLReqServerListMes ( const CHostAddress& InetAddr )
         { ConnLessProtocol.CreateCLReqServerListMes ( InetAddr ); }
 
-    int EstimatedOverallDelay ( const int iPingTimeMs );
+    int EstimatedOverallDelay ( const int iPingTimeMs, QString& strDelayDetailed  );
 
     void GetBufErrorRates ( CVector<double>& vecErrRates, double& dLimit, double& dMaxUpLimit )
         { Channel.GetBufErrorRates ( vecErrRates, dLimit, dMaxUpLimit ); }

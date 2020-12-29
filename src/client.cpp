@@ -1180,7 +1180,7 @@ void CClient::ProcessAudioDataIntern ( CVector<int16_t>& vecsStereoSndCrd )
     Q_UNUSED ( iUnused )
 }
 
-int CClient::EstimatedOverallDelay ( const int iPingTimeMs )
+int CClient::EstimatedOverallDelay ( const int iPingTimeMs, QString& strDelayDetailed )
 {
     const float fSystemBlockDurationMs = static_cast<float> ( iOPUSFrameSizeSamples ) /
         SYSTEM_SAMPLE_RATE_HZ * 1000;
@@ -1233,6 +1233,17 @@ int CClient::EstimatedOverallDelay ( const int iPingTimeMs )
         fTotalJitterBufferDelayMs +
         fTotalSoundCardDelayMs +
         fAdditionalAudioCodecDelayMs;
+
+    strDelayDetailed.clear();
+    QTextStream streamDelayDetailed(&strDelayDetailed);
+    streamDelayDetailed << "EstimatedOverallDelay [ms]:" << fTotalBufferDelayMs << Qt::endl <<
+           QString("%1 ping").arg(float(iPingTimeMs),6,'f',1,' ') << Qt::endl <<
+           QString("%1 buffer jitterBuffer (lokal+server)").arg(fTotalJitterBufferDelayMs,6,'f',1,' ') << Qt::endl <<
+           QString("%1 buffer fill network packets").arg(fDelayToFillNetworkPacketsMs,6,'f',1,' ') << Qt::endl <<
+           QString("%1 codec (OPUS, additional)").arg(fAdditionalAudioCodecDelayMs,6,'f',1,' ') << Qt::endl <<
+           QString("%1 sound card").arg(fTotalSoundCardDelayMs,6,'f',1,' ') << Qt::endl <<
+           QString("(%1 sound card i/o)").arg(fSoundCardInputOutputLatencyMs,6,'f',1,' ') << Qt::endl <<
+                "";
 
     return MathUtils::round ( fTotalBufferDelayMs + iPingTimeMs );
 }

@@ -1077,7 +1077,8 @@ void CClientDlg::OnTimerPing()
 void CClientDlg::OnPingTimeResult ( int iPingTime )
 {
     // calculate overall delay
-    const int iOverallDelayMs = pClient->EstimatedOverallDelay ( iPingTime );
+    QString strDelayDetailed;
+    const int iOverallDelayMs = pClient->EstimatedOverallDelay ( iPingTime, strDelayDetailed );
 
     // color definition: <= 43 ms green, <= 68 ms yellow, otherwise red
     CMultiColorLED::ELightColor eOverallDelayLEDColor;
@@ -1105,11 +1106,13 @@ void CClientDlg::OnPingTimeResult ( int iPingTime )
         // set ping time result to general settings dialog
         ClientSettingsDlg.SetPingTimeResult ( iPingTime,
                                               iOverallDelayMs,
-                                              eOverallDelayLEDColor );
+                                              eOverallDelayLEDColor,
+                                              strDelayDetailed);
     }
 
     // update delay LED on the main window
     ledDelay->SetLight ( eOverallDelayLEDColor );
+    ledDelay->setToolTip(strDelayDetailed);
 }
 
 void CClientDlg::OnTimerCheckAudioDeviceOk()

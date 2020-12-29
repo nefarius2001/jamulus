@@ -700,7 +700,8 @@ void CClientSettingsDlg::OnSndCrdBufferDelayButtonGroupClicked ( QAbstractButton
 
 void CClientSettingsDlg::SetPingTimeResult ( const int                         iPingTime,
                                              const int                         iOverallDelayMs,
-                                             const CMultiColorLED::ELightColor eOverallDelayLEDColor )
+                                             const CMultiColorLED::ELightColor eOverallDelayLEDColor,
+                                             const QString strDelayDetailed)
 {
     // apply values to GUI labels, take special care if ping time exceeds
     // a certain value
@@ -714,6 +715,7 @@ void CClientSettingsDlg::SetPingTimeResult ( const int                         i
     {
         lblPingTimeValue->setText     ( QString().setNum ( iPingTime ) + " ms" );
         lblOverallDelayValue->setText ( QString().setNum ( iOverallDelayMs ) + " ms" );
+        lblOverallDelayValue->setToolTip(strDelayDetailed);
     }
 
     // update upstream rate information label (note that we update this together
