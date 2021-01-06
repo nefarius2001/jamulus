@@ -69,7 +69,9 @@ public:
 
     void SetPingTimeResult ( const int                         iPingTime,
                              const int                         iOverallDelayMs,
-                             const CMultiColorLED::ELightColor eOverallDelayLEDColor );
+                             const int                         iBufferDelayMs,
+                             const CMultiColorLED::ELightColor eOverallDelayLEDColor,
+                             const QString                     strBufferDelayDetails);
 
     void UpdateDisplay();
     void UpdateSoundDeviceChannelSelectionFrame();

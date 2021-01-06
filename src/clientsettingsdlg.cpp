@@ -264,6 +264,8 @@ CClientSettingsDlg::CClientSettingsDlg ( CClient*         pNCliP,
         "higher than your available internet upload speed (check this with a "
         "service such as speedtest.net)." );
 
+    lblBufferDelay->setWhatsThis       ( strConnStats );
+    lblBufferDelayValue->setWhatsThis  ( strConnStats );
     lblPingTime->setWhatsThis          ( strConnStats );
     lblPingTimeValue->setWhatsThis     ( strConnStats );
     lblOverallDelay->setWhatsThis      ( strConnStats );
@@ -289,6 +291,7 @@ CClientSettingsDlg::CClientSettingsDlg ( CClient*         pNCliP,
     ledOverallDelay->Reset();
     ledNetw->SetType              ( CMultiColorLED::MT_INDICATOR );
     ledOverallDelay->SetType      ( CMultiColorLED::MT_INDICATOR );
+    lblBufferDelayValue->setText  ( "---" );
     lblPingTimeValue->setText     ( "---" );
     lblOverallDelayValue->setText ( "---" );
     lblUpstreamValue->setText     ( "---" );
@@ -699,8 +702,10 @@ void CClientSettingsDlg::OnSndCrdBufferDelayButtonGroupClicked ( QAbstractButton
 }
 
 void CClientSettingsDlg::SetPingTimeResult ( const int                         iPingTime,
+                                             const int                         iBufferDelayMs,
                                              const int                         iOverallDelayMs,
-                                             const CMultiColorLED::ELightColor eOverallDelayLEDColor )
+                                             const CMultiColorLED::ELightColor eOverallDelayLEDColor,
+                                             const QString                     strBufferDelayDetails)
 {
     // apply values to GUI labels, take special care if ping time exceeds
     // a certain value
@@ -715,6 +720,8 @@ void CClientSettingsDlg::SetPingTimeResult ( const int                         i
         lblPingTimeValue->setText     ( QString().setNum ( iPingTime ) + " ms" );
         lblOverallDelayValue->setText ( QString().setNum ( iOverallDelayMs ) + " ms" );
     }
+    lblBufferDelayValue->setText  ( QString().setNum ( iBufferDelayMs ) + " ms" );
+    lblBufferDelayValue->setToolTip(strBufferDelayDetails);
 
     // update upstream rate information label (note that we update this together
     // with the ping time since the network packet sequence number feature might
@@ -734,6 +741,7 @@ void CClientSettingsDlg::UpdateDisplay()
     if ( !pClient->IsRunning() )
     {
         // clear text labels with client parameters
+        lblBufferDelayValue->setText  ( "---" );
         lblPingTimeValue->setText     ( "---" );
         lblOverallDelayValue->setText ( "---" );
         lblUpstreamValue->setText     ( "---" );

@@ -528,6 +528,36 @@
       <item>
        <layout class="QHBoxLayout">
         <item>
+         <widget class="QLabel" name="lblBufferDelay">
+          <property name="text">
+           <string>Buffer Delay (all)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblBufferDelayValue">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>val</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item>
          <widget class="QLabel" name="lblPingTime">
           <property name="text">
            <string>Ping Time</string>
