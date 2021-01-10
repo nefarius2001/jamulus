@@ -69,20 +69,18 @@ DEFINES += QT_NO_DEPRECATED_WARNINGS
 win32 {
     DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
     DEFINES += NOMINMAX # solves a compiler error in qdatetime.h (Qt5)
-    HEADERS += windows/sound.h
-    SOURCES += windows/sound.cpp \
-        windows/ASIOSDK2/common/asio.cpp \
-        windows/ASIOSDK2/host/asiodrivers.cpp \
-        windows/ASIOSDK2/host/pc/asiolist.cpp
+    # FIXME: there should be a portaudio config option, not win32-specific
+    HEADERS += src/portaudiosound.h
+    SOURCES += src/portaudiosound.cpp
     RC_FILE = windows/mainicon.rc
-    INCLUDEPATH += windows/ASIOSDK2/common \
-        windows/ASIOSDK2/host \
-        windows/ASIOSDK2/host/pc
     mingw* {
-        LIBS += -lole32 \
+        LIBS += -lportaudio \
+            -lwinmm \
+            -lole32 \
+            -luuid \
+            -lsetupapi \
             -luser32 \
             -ladvapi32 \
-            -lwinmm \
             -lws2_32
     } else {
         QMAKE_LFLAGS += /DYNAMICBASE:NO # fixes crash with libjack64.dll, see https://github.com/jamulussoftware/jamulus/issues/93
