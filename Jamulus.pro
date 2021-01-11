@@ -74,6 +74,9 @@ win32 {
     SOURCES += src/portaudiosound.cpp
     RC_FILE = windows/mainicon.rc
     mingw* {
+        # FIXME: portaudio's make install doesn't cover windows specific files,
+        # add the source's include/ directly for now.
+        QMAKE_CXXFLAGS += -I../../portaudio/include
         LIBS += -lportaudio \
             -lwinmm \
             -lole32 \
