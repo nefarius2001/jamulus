@@ -52,6 +52,8 @@ protected:
     virtual QString  LoadAndInitializeDriver ( QString, bool );
     virtual void     UnloadCurrentDriver();
 
+    PaDeviceIndex DeviceIndexFromName ( const QString& strDriverName );
+
     static int paStreamCallback (const void *input, void *output, unsigned long frameCount,
                                  const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags,
                                  void *userData);

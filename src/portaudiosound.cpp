@@ -82,7 +82,11 @@ int CSound::Init ( const int iNewPrefMonoBufferSize )
     {
         long minBufferSize, maxBufferSize, prefBufferSize, granularity;
         PaAsio_GetAvailableBufferSizes ( deviceIndex, &minBufferSize, &maxBufferSize, &prefBufferSize, &granularity );
-        if ( iNewPrefMonoBufferSize > maxBufferSize )
+        if ( granularity == 0 ) // no options, just take the preferred one.
+        {
+            iPrefMonoBufferSize = prefBufferSize;
+        }
+        else if ( iNewPrefMonoBufferSize > maxBufferSize )
         {
             iPrefMonoBufferSize = maxBufferSize;
         }
@@ -123,27 +127,31 @@ CSound::~CSound()
     Pa_Terminate();
 }
 
-QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDriverSetup )
+PaDeviceIndex CSound::DeviceIndexFromName (const QString& strDriverName )
 {
-    (void) bOpenDriverSetup; // FIXME: respect this
-
-    int deviceIndex = -1;
     for ( int i = 0; i < lNumDevs; i++ )
     {
         PaDeviceIndex devIndex = Pa_HostApiDeviceIndexToDeviceIndex ( asioIndex, i );
         const PaDeviceInfo* devInfo = Pa_GetDeviceInfo ( devIndex );
         if ( strDriverName.compare ( devInfo->name ) == 0 )
         {
-            deviceIndex = devIndex;
-            break;
+            return devIndex;
         }
     }
-    if ( deviceIndex < 0 )
+    return -1;
+}
+
+QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDriverSetup )
+{
+    (void) bOpenDriverSetup; // FIXME: respect this
+
+    int devIndex = DeviceIndexFromName ( strDriverName );
+    if ( devIndex < 0 )
     {
         return tr ( "The current selected audio device is no longer present in the system." );
     }
 
-    const PaDeviceInfo* deviceInfo = Pa_GetDeviceInfo ( deviceIndex );
+    const PaDeviceInfo* deviceInfo = Pa_GetDeviceInfo ( devIndex );
 
     if ( deviceInfo->maxInputChannels < 2 || deviceInfo->maxOutputChannels < 2 )
     {
@@ -156,6 +164,7 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
         Pa_CloseStream ( deviceStream );
         deviceStream = NULL;
     }
+    deviceIndex = devIndex;
 
     PaStreamParameters paInputParams;
     paInputParams.device = deviceIndex;
@@ -196,6 +205,7 @@ void CSound::UnloadCurrentDriver()
     {
         Pa_CloseStream ( deviceStream );
         deviceStream = NULL;
+        deviceIndex = -1;
     }
 }
 
