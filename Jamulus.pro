@@ -58,6 +58,11 @@ INCLUDEPATH_OPUS = libs/opus/include \
     libs/opus/silk/float \
     libs/opus/silk/fixed
 
+INCLUDEPATH_PORTAUDIO = libs/portaudio/include libs/portaudio/src/common
+win32 {
+    INCLUDEPATH_PORTAUDIO += libs/portaudio/src/os/win
+}
+
 DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
     OPUS_BUILD \
     USE_ALLOCA \
@@ -70,14 +75,14 @@ DEFINES += QT_NO_DEPRECATED_WARNINGS
 
 win32 {
     DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
-    DEFINES += NOMINMAX # solves a compiler error in qdatetime.h (Qt5)
     !CONFIG(portaudio) {
+        DEFINES += NOMINMAX # solves a compiler error in qdatetime.h (Qt5), breaks portaudio wasapi&wdmks though
         HEADERS += windows/sound.h
-        SOURCES += windows/sound.cpp \
-            windows/ASIOSDK2/common/asio.cpp \
-            windows/ASIOSDK2/host/asiodrivers.cpp \
-            windows/ASIOSDK2/host/pc/asiolist.cpp
+        SOURCES += windows/sound.cpp
     }
+    SOURCES += windows/ASIOSDK2/common/asio.cpp \
+        windows/ASIOSDK2/host/asiodrivers.cpp \
+        windows/ASIOSDK2/host/pc/asiolist.cpp
     RC_FILE = windows/mainicon.rc
     INCLUDEPATH += windows/ASIOSDK2/common \
         windows/ASIOSDK2/host \
@@ -500,6 +505,16 @@ HEADERS_OPUS_X86 = libs/opus/celt/x86/celt_lpc_sse.h \
     libs/opus/celt/x86/vq_sse.h \
     libs/opus/celt/x86/x86cpu.h
 
+HEADERS_PORTAUDIO = $$files(libs/portaudio/include/*.h) $$files(libs/portaudio/src/common/*.h)
+
+win32 {
+    HEADERS_PORTAUDIO += $$files(libs/portaudio/src/os/win/*.h) \
+        $$files(libs/portaudio/src/hostapi/asio/*.h) \
+        $$files(libs/portaudio/src/hostapi/wdmks/*.h) \
+        $$files(libs/portaudio/src/hostapi/wmme/*.h) \
+        $$files(libs/portaudio/src/hostapi/wasapi/*.h)
+}
+
 SOURCES += src/buffer.cpp \
     src/channel.cpp \
     src/client.cpp \
@@ -689,6 +704,39 @@ android {
         HEADERS_OPUS += libs/opus/win32/config.h
     }
 }
+
+
+SOURCES_PORTAUDIO = $$files(libs/portaudio/src/common/*.c)
+SOURCES_CXX_PORTAUDIO =
+
+win32 {
+    SOURCES_PORTAUDIO += $$files(libs/portaudio/src/os/win/*.c) \
+        $$files(libs/portaudio/src/hostapi/wdmks/*.c) \
+        $$files(libs/portaudio/src/hostapi/wmme/*.c) \
+        $$files(libs/portaudio/src/hostapi/wasapi/*.c)
+    SOURCES_CXX_PORTAUDIO += $$files(libs/portaudio/src/hostapi/asio/*.cpp)
+} else:unix {
+    # FIXME: also some hostapi files, probably.
+    SOURCES_PORTAUDIO += $$files(libs/portaudio/src/os/unix/*.c)
+}
+
+# Suppress warnings from portaudio sources, with -w
+# NOTE: we set portaudio(cc|cxx).variable_out to OBJECTS down near the
+# bottom depending on the configuration.
+# See also
+# - https://wiki.qt.io/Undocumented_QMake#Custom_tools
+# - https://stackoverflow.com/questions/27683777/how-to-specify-compiler-flag-to-a-single-source-file-with-qmake
+portaudiocc.name = portaudiocc
+portaudiocc.input = SOURCES_PORTAUDIO
+portaudiocc.dependency_type = TYPE_C
+portaudiocc.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_IN_BASE}$${first(QMAKE_EXT_OBJ)}
+portaudiocc.commands = ${CC} $(CFLAGS) -w $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
+portaudiocxx.name = portaudiocxx
+portaudiocxx.input = SOURCES_CXX_PORTAUDIO
+portaudiocxx.dependency_type = TYPE_C
+portaudiocxx.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_IN_BASE}$${first(QMAKE_EXT_OBJ)}
+portaudiocxx.commands = ${CXX} $(CXXFLAGS) -w $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
+
 
 DISTFILES += ChangeLog \
     COPYING \
@@ -1047,6 +1095,9 @@ DISTFILES_OPUS += libs/opus/AUTHORS \
     libs/opus/celt/arm/armopts.s.in \
     libs/opus/celt/arm/celt_pitch_xcorr_arm.s \
 
+DISTFILES_PORTAUDIO += libs/portaudio/LICENSE.txt \
+    libs/portaudio/README.txt
+
 contains(CONFIG, "headless") {
     DEFINES += HEADLESS
 } else {
@@ -1082,14 +1133,21 @@ CONFIG(portaudio) {
     HEADERS += src/portaudiosound.h
     SOURCES += src/portaudiosound.cpp
     mingw* {
-        LIBS += -lportaudio \
-            -lwinmm \
+        CONFIG(portaudio_shared_lib) {
+            LIBS += -lportaudio
+        } else {
+            DEFINES += PA_USE_ASIO=1
+            INCLUDEPATH += $$INCLUDEPATH_PORTAUDIO
+            HEADERS += $$HEADERS_PORTAUDIO
+            portaudiocxx.variable_out = OBJECTS
+            portaudiocc.variable_out = OBJECTS
+            QMAKE_EXTRA_COMPILERS += portaudiocc portaudiocxx
+            DISTFILES += $$DISTFILES_PORTAUDIO
+        }
+        LIBS += -lwinmm \
             -lole32 \
             -luuid \
             -lsetupapi
-        # FIXME: portaudio's make install doesn't cover windows specific files,
-        # add the source's include/ directly for now.
-        INCLUDEPATH += ../../portaudio/include
     } else {
         error( "portaudio only tested on mingw for now" )
     }
