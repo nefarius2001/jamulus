@@ -25,6 +25,8 @@ CONFIG += qt \
     lrelease \
     release
 
+CONFIG += portaudio
+
 QT += network \
     xml \
     concurrent
@@ -69,21 +71,22 @@ DEFINES += QT_NO_DEPRECATED_WARNINGS
 win32 {
     DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
     DEFINES += NOMINMAX # solves a compiler error in qdatetime.h (Qt5)
-    # FIXME: there should be a portaudio config option, not win32-specific
-    HEADERS += src/portaudiosound.h
-    SOURCES += src/portaudiosound.cpp
+    !CONFIG(portaudio) {
+        HEADERS += windows/sound.h
+        SOURCES += windows/sound.cpp \
+            windows/ASIOSDK2/common/asio.cpp \
+            windows/ASIOSDK2/host/asiodrivers.cpp \
+            windows/ASIOSDK2/host/pc/asiolist.cpp
+    }
     RC_FILE = windows/mainicon.rc
+    INCLUDEPATH += windows/ASIOSDK2/common \
+        windows/ASIOSDK2/host \
+        windows/ASIOSDK2/host/pc
     mingw* {
-        # FIXME: portaudio's make install doesn't cover windows specific files,
-        # add the source's include/ directly for now.
-        QMAKE_CXXFLAGS += -I../../portaudio/include
-        LIBS += -lportaudio \
-            -lwinmm \
-            -lole32 \
-            -luuid \
-            -lsetupapi \
+        LIBS += -lole32 \
             -luser32 \
             -ladvapi32 \
+            -lwinmm \
             -lws2_32
     } else {
         QMAKE_LFLAGS += /DYNAMICBASE:NO # fixes crash with libjack64.dll, see https://github.com/jamulussoftware/jamulus/issues/93
@@ -1071,6 +1074,25 @@ contains(CONFIG, "opus_shared_lib") {
     HEADERS += $$HEADERS_OPUS
     SOURCES += $$SOURCES_OPUS
     DISTFILES += $$DISTFILES_OPUS
+}
+
+
+CONFIG(portaudio) {
+    DEFINES += USE_PORTAUDIO
+    HEADERS += src/portaudiosound.h
+    SOURCES += src/portaudiosound.cpp
+    mingw* {
+        LIBS += -lportaudio \
+            -lwinmm \
+            -lole32 \
+            -luuid \
+            -lsetupapi
+        # FIXME: portaudio's make install doesn't cover windows specific files,
+        # add the source's include/ directly for now.
+        INCLUDEPATH += ../../portaudio/include
+    } else {
+        error( "portaudio only tested on mingw for now" )
+    }
 }
 
 # disable version check if requested (#370)
