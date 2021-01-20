@@ -29,6 +29,20 @@
 #include "portaudiosound.h"
 #include <pa_asio.h>
 
+// Needed for buffer size change callback
+static CSound* pThisSound;
+
+static void bufferSizeChangeCallback(long newBufferSize)
+{
+    (void) newBufferSize;
+    pThisSound->EmitReinitRequestSignal ( RS_ONLY_RESTART_AND_INIT );
+}
+static void resetRequestCallback()
+{
+    pThisSound->EmitReinitRequestSignal ( RS_ONLY_RESTART_AND_INIT );
+}
+
+
 CSound::CSound( void           (*fpNewProcessCallback) ( CVector<short>& psData, void* arg ),
                 void*          arg,
                 const QString& strMIDISetup,
@@ -38,11 +52,16 @@ CSound::CSound( void           (*fpNewProcessCallback) ( CVector<short>& psData,
     deviceIndex (-1),
     deviceStream (NULL)
 {
+    pThisSound = this;
+
     PaError err = Pa_Initialize ();
     if ( err != paNoError )
     {
         throw CGenErr( tr( "Failed to initialize PortAudio: %1" ).arg ( Pa_GetErrorText ( err )) );
     }
+
+    PaAsio_RegisterBufferSizeChangeCallback ( &bufferSizeChangeCallback );
+    PaAsio_RegisterResetRequestCallback ( &resetRequestCallback );
 
     // Find ASIO API index.  TODO: support non-ASIO APIs.
     PaHostApiIndex apiCount = Pa_GetHostApiCount ();
@@ -118,6 +137,11 @@ int CSound::Init ( const int iNewPrefMonoBufferSize )
     }
 
     vecsAudioData.Init ( iPrefMonoBufferSize * 2 );
+    if ( deviceStream && deviceIndex >= 0 )
+    {
+        ReinitializeDriver ( deviceIndex );
+    }
+
     return CSoundBase::Init ( iPrefMonoBufferSize );
 }
 
@@ -150,7 +174,11 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     {
         return tr ( "The current selected audio device is no longer present in the system." );
     }
+    return ReinitializeDriver ( devIndex );
+}
 
+QString CSound::ReinitializeDriver ( int devIndex )
+{
     const PaDeviceInfo* deviceInfo = Pa_GetDeviceInfo ( devIndex );
 
     if ( deviceInfo->maxInputChannels < 2 || deviceInfo->maxOutputChannels < 2 )
@@ -163,18 +191,18 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
     {
         Pa_CloseStream ( deviceStream );
         deviceStream = NULL;
+        deviceIndex = -1;
     }
-    deviceIndex = devIndex;
 
     PaStreamParameters paInputParams;
-    paInputParams.device = deviceIndex;
+    paInputParams.device = devIndex;
     paInputParams.channelCount = std::min (2, deviceInfo->maxInputChannels);
     paInputParams.sampleFormat = paInt16;
     paInputParams.suggestedLatency = deviceInfo->defaultLowInputLatency;
     paInputParams.hostApiSpecificStreamInfo = NULL;
 
     PaStreamParameters paOutputParams;
-    paOutputParams.device = deviceIndex;
+    paOutputParams.device = devIndex;
     paOutputParams.channelCount = std::min (2, deviceInfo->maxOutputChannels);
     paOutputParams.sampleFormat = paInt16;
     paOutputParams.suggestedLatency = deviceInfo->defaultLowOutputLatency;
@@ -196,6 +224,7 @@ QString CSound::LoadAndInitializeDriver ( QString strDriverName, bool bOpenDrive
             ( Pa_GetLastHostErrorInfo () ->errorText );
     }
 
+    deviceIndex = devIndex;
     return "";
 }
 
