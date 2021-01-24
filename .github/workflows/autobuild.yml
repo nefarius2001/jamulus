@@ -113,7 +113,7 @@ jobs:
         run:                        sh mac/autorelease_mac.sh ${{ github.workspace }}
         if:                         matrix.config.target_os == 'macos'
       - name:                       "Build (Android)"
-        uses:                       ./android/automated_build/ # Uses an action in the directory
+        uses:                       docker://nefarius2001/jamulus-builder-android:1.0
         if:                         matrix.config.target_os == 'android'
 
       # Upload release
