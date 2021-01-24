@@ -25,7 +25,14 @@ CONFIG += qt \
     lrelease \
     release
 
-CONFIG += portaudio
+# default to use portaudio in Windows
+win32 {
+    CONFIG += portaudio
+}
+CONFIG (noportaudio) {
+    CONFIG -= portaudio
+}
+
 
 QT += network \
     xml \
@@ -73,13 +80,30 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\" \
 # TODO as soon as we drop support for the old Qt version, remove the following line
 DEFINES += QT_NO_DEPRECATED_WARNINGS
 
+# msvc uses a different options syntax for adding libraries.
+defineReplace(libnames) {
+    libopts =
+    names = $$1
+    for(libname, names) {
+        win32-msvc* {
+            libopts += $${libname}.lib
+        } else {
+            libopts += -l$${libname}
+        }
+    }
+    return($$libopts)
+}
+
 win32 {
     DEFINES -= UNICODE # fixes issue with ASIO SDK (asiolist.cpp is not unicode compatible)
     !CONFIG(portaudio) {
-        DEFINES += NOMINMAX # solves a compiler error in qdatetime.h (Qt5), breaks portaudio wasapi&wdmks though
         HEADERS += windows/sound.h
         SOURCES += windows/sound.cpp
     }
+    win32-msvc* {
+        DEFINES += NOMINMAX # solves a compiler error in qdatetime.h (Qt5) when compiling with MSVC, breaks portaudio build under mingw
+    }
+
     SOURCES += windows/ASIOSDK2/common/asio.cpp \
         windows/ASIOSDK2/host/asiodrivers.cpp \
         windows/ASIOSDK2/host/pc/asiolist.cpp
@@ -87,19 +111,9 @@ win32 {
     INCLUDEPATH += windows/ASIOSDK2/common \
         windows/ASIOSDK2/host \
         windows/ASIOSDK2/host/pc
-    mingw* {
-        LIBS += -lole32 \
-            -luser32 \
-            -ladvapi32 \
-            -lwinmm \
-            -lws2_32
-    } else {
+    LIBS += $$libnames(ole32 user32 advapi32 winmm ws2_32)
+    win32-msvc* {
         QMAKE_LFLAGS += /DYNAMICBASE:NO # fixes crash with libjack64.dll, see https://github.com/jamulussoftware/jamulus/issues/93
-        LIBS += ole32.lib \
-            user32.lib \
-            advapi32.lib \
-            winmm.lib \
-            ws2_32.lib
     }
 
     # replace ASIO with jack if requested
@@ -715,28 +729,36 @@ win32 {
         $$files(libs/portaudio/src/hostapi/wmme/*.c) \
         $$files(libs/portaudio/src/hostapi/wasapi/*.c)
     SOURCES_CXX_PORTAUDIO += $$files(libs/portaudio/src/hostapi/asio/*.cpp)
+    # Adapter for C++ compiler-specific calling convention not needed for msvc
+    win32-msvc* {
+        SOURCES_CXX_PORTAUDIO -= libs/portaudio/src/hostapi/asio/iasiothiscallresolver.cpp
+    }
 } else:unix {
     # FIXME: also some hostapi files, probably.
     SOURCES_PORTAUDIO += $$files(libs/portaudio/src/os/unix/*.c)
 }
 
-# Suppress warnings from portaudio sources, with -w
-# NOTE: we set portaudio(cc|cxx).variable_out to OBJECTS down near the
-# bottom depending on the configuration.
-# See also
-# - https://wiki.qt.io/Undocumented_QMake#Custom_tools
-# - https://stackoverflow.com/questions/27683777/how-to-specify-compiler-flag-to-a-single-source-file-with-qmake
-portaudiocc.name = portaudiocc
-portaudiocc.input = SOURCES_PORTAUDIO
-portaudiocc.dependency_type = TYPE_C
-portaudiocc.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_IN_BASE}$${first(QMAKE_EXT_OBJ)}
-portaudiocc.commands = ${CC} $(CFLAGS) -w $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
-portaudiocxx.name = portaudiocxx
-portaudiocxx.input = SOURCES_CXX_PORTAUDIO
-portaudiocxx.dependency_type = TYPE_C
-portaudiocxx.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_IN_BASE}$${first(QMAKE_EXT_OBJ)}
-portaudiocxx.commands = ${CXX} $(CXXFLAGS) -w $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
-
+# I can't figure out how to make the custom compiler stuff work for
+# msvc, we'll have to live with portaudio compile warnings in that
+# build.
+!win32-msvc* {
+    # Suppress warnings from portaudio sources, with -w
+    # NOTE: we set portaudio(cc|cxx).variable_out to OBJECTS down near the
+    # bottom depending on the configuration.
+    # See also
+    # - https://wiki.qt.io/Undocumented_QMake#Custom_tools
+    # - https://stackoverflow.com/questions/27683777/how-to-specify-compiler-flag-to-a-single-source-file-with-qmake
+    portaudiocc.name = portaudiocc
+    portaudiocc.input = SOURCES_PORTAUDIO
+    portaudiocc.dependency_type = TYPE_C
+    portaudiocc.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_IN_BASE}$${first(QMAKE_EXT_OBJ)}
+    portaudiocc.commands = ${CC} $(CFLAGS) -w $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
+    portaudiocxx.name = portaudiocxx
+    portaudiocxx.input = SOURCES_CXX_PORTAUDIO
+    portaudiocxx.dependency_type = TYPE_C
+    portaudiocxx.output = ${QMAKE_VAR_OBJECTS_DIR}${QMAKE_FILE_IN_BASE}$${first(QMAKE_EXT_OBJ)}
+    portaudiocxx.commands = ${CXX} $(CXXFLAGS) -w $(INCPATH) -c ${QMAKE_FILE_IN} -o ${QMAKE_FILE_OUT}
+}
 
 DISTFILES += ChangeLog \
     COPYING \
@@ -1132,24 +1154,25 @@ CONFIG(portaudio) {
     DEFINES += USE_PORTAUDIO
     HEADERS += src/portaudiosound.h
     SOURCES += src/portaudiosound.cpp
-    mingw* {
+    win32 {
         CONFIG(portaudio_shared_lib) {
-            LIBS += -lportaudio
+            LIBS += $$libnames(portaudio)
         } else {
             DEFINES += PA_USE_ASIO=1
             INCLUDEPATH += $$INCLUDEPATH_PORTAUDIO
             HEADERS += $$HEADERS_PORTAUDIO
-            portaudiocxx.variable_out = OBJECTS
-            portaudiocc.variable_out = OBJECTS
-            QMAKE_EXTRA_COMPILERS += portaudiocc portaudiocxx
+            mingw {
+                portaudiocxx.variable_out = OBJECTS
+                portaudiocc.variable_out = OBJECTS
+                QMAKE_EXTRA_COMPILERS += portaudiocc portaudiocxx
+            } else {
+                SOURCES += $$SOURCES_PORTAUDIO $$SOURCES_CXX_PORTAUDIO
+            }
             DISTFILES += $$DISTFILES_PORTAUDIO
         }
-        LIBS += -lwinmm \
-            -lole32 \
-            -luuid \
-            -lsetupapi
+        LIBS += $$libnames(winmm ole32 uuid setupapi)
     } else {
-        error( "portaudio only tested on mingw for now" )
+        error( "portaudio only tested on win32 for now" )
     }
 }
 
