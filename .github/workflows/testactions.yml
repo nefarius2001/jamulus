@@ -3,36 +3,7 @@
 on:
   [workflow_dispatch, push]
 name:                               MyTests
-jobs:
-
-  release_assets:
-    name:                           Bsdyyyyyyyys
-    runs-on:                        ${{ matrix.config.building_on_os }}
-    strategy:
-      fail-fast:                    false
-      matrix: # Think of this like a foreach loop. Basically runs the steps with every combination of the contents of this. More info: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-        config:
-           - config_name:           MacOS
-             action_path:           "./mac/autobuild"
-           - config_name:           Windows
-             action_path:           "./windows/autobuild"
-           - config_name:           AndroidAPK
-             action_path:           "./android/autobuild"
-    steps:
-
-      - name:                       "fffffffffffff)"
-        uses:                       ./.github/actions_scripts/mytestaction2
-          
-      - name:                       ${{ matrix.config.config_name }}
-        uses:                       ./.github/actions_scripts/mytestaction2
-          
-      - name:                       ${{ matrix.config.config_name }}
-        uses:                       ${{ matrix.config.config_name }}
-          
-      - name:                       ${{ matrix.config.config_name }}
-        uses:                       ${{ matrix.config.action_path }}
-          
-
+jobs:        
   release_win:
     name:                           Bsdyyyyyyyys
     steps:
