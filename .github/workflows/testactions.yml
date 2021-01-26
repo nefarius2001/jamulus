@@ -12,12 +12,6 @@ jobs:
       fail-fast:                    false
       matrix: # Think of this like a foreach loop. Basically runs the steps with every combination of the contents of this. More info: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
         config:
-           #- config_name:           Linux (normal)
-           #  target_os:             linux
-           #  building_on_os:        ubuntu-18.04
-           #- config_name:           Linux (headless)
-           #  target_os:             linux
-           #  building_on_os:        ubuntu-18.04
            - config_name:           MacOS
              action_path:           "./mac/autobuild"
            - config_name:           Windows
@@ -26,9 +20,12 @@ jobs:
              action_path:           "./android/autobuild"
     steps:
 
+      - name:                       "fffffffffffff)"
+        uses:                       ./.github/actions_scripts/mytestaction2
+          
+      - name:                       ${{ matrix.config.config_name }}
+        uses:                       ./.github/actions_scripts/mytestaction2
           
       - name:                       ${{ matrix.config.config_name }}
         uses:                       ${{ matrix.config.action_path }}
           
-      - name:                       "fffffffffffff)"
-        uses:                       ./.github/actions_scripts/mytestaction2
