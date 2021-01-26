@@ -72,6 +72,11 @@ jobs:
       fail-fast:                    false
       matrix: # Think of this like a foreach loop. Basically runs the steps with every combination of the contents of this. More info: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
         config:
+           - config_name:           Linux2 (normal)
+             target_os:             linux2
+             building_on_os:        ubuntu-18.04
+             asset_path:            deploy/Jamulus_amd64.deb
+             asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
            - config_name:           Linux (normal)
              target_os:             linux
              building_on_os:        ubuntu-18.04
@@ -116,22 +121,21 @@ jobs:
 
       # Build
       - name:                       "Build deb (Linux)"
+        if:                         matrix.config.target_os == 'linux'
         run:                        sh linux/autorelease_linux.sh ${{ github.workspace }}
-        if:                         matrix.config.target_os == 'linux'
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
-        if:                         matrix.config.target_os == 'linux'
+      - name:                       "Build deb (Linux)"
+        if:                         matrix.config.target_os == 'linux2'
+        run:                        sh autobuild/linux/autorelease_linux_codeql.sh ${{ github.workspace }}
         
       - name:                       "Build (Windows)"
-        run:                        powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ github.workspace }}"
         if:                         matrix.config.target_os == 'windows'
+        run:                        powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ github.workspace }}"
       - name:                       "Build (macOS)"
-        run:                        sh mac/autorelease_mac.sh ${{ github.workspace }}
         if:                         matrix.config.target_os == 'macos'
+        run:                        sh mac/autorelease_mac.sh ${{ github.workspace }}
       - name:                       "Build (Android)"
-        uses:                       ./autobuild/android/ # Uses an action in the directory
         if:                         matrix.config.target_os == 'android'   
+        uses:                       ./autobuild/android/ # Uses an action in the directory
 
       # Upload Artifact to Job
       - name:                       Upload Artifact to Job
@@ -143,7 +147,9 @@ jobs:
           
       # Run CodeQL tools for code-scanning for security
       - name: Perform CodeQL Analysis
+        if:                         matrix.config.target_os != 'android'   
         uses: github/codeql-action/analyze@v1
+        
       # Upload Artifact to Release
       - name:                       Upload Artifact to Release
         if:                         ${{ contains(needs.create_release.outputs.publish_to_release, 'true') }}
