@@ -133,10 +133,6 @@ jobs:
         uses:                       ./autobuild/android/ # Uses an action in the directory
         if:                         matrix.config.target_os == 'android'   
 
-      # Run CodeQL tools for code-scanning for security
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
-
       # Upload Artifact to Job
       - name:                       Upload Artifact to Job
         uses:                       actions/upload-artifact@v2
@@ -144,6 +140,10 @@ jobs:
           name:                     ${{ matrix.config.asset_name }}
           path:                     ${{ matrix.config.asset_path }}
           retention-days:           14
+          
+      # Run CodeQL tools for code-scanning for security
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
       # Upload Artifact to Release
       - name:                       Upload Artifact to Release
         if:                         ${{ contains(needs.create_release.outputs.publish_to_release, 'true') }}
