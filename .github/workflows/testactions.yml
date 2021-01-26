@@ -8,6 +8,8 @@ jobs:
     name:                           Bsdyyyyyyyys
     runs-on:                        windows-latest
     steps:
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
       - name:                       AutobuildAutobuild
         uses:                       ./windows/autobuild
         
@@ -15,6 +17,8 @@ jobs:
     name:                           Bsdaaaaaa
     runs-on:                        ubuntu-latest
     steps:
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
       - name:                       AutobuildAutobuild
         uses:                       ./android/autobuild
         
@@ -22,5 +26,7 @@ jobs:
     name:                           MacOSMacOS
     runs-on:                        macos-latest
     steps:
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
       - name:                       AutobuildAutobuild
         uses:                       ./mac/autobuild
