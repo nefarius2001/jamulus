@@ -1,0 +1,16 @@
+name: 'MyTestAction 1'
+description: 'Run MyTestAction 1'
+
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-id }}
+runs:
+  using: "composite"
+  steps:
+    - id: random-number-generator1
+      run: echo " name=random-id::$(echo $RANDOM)"
+      shell: bash
+    - id: random-number-generator2
+      run: echo "::name=random-id::$(echo $RANDOM)"
+      shell: bash

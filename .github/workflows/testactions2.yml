@@ -1,0 +1,32 @@
+#### Automatically build and upload releases to GitHub ####
+
+on:
+  [workflow_dispatch]
+name:                               MyTests2
+jobs:        
+  release_win:
+    name:                           Autobuild Windows
+    runs-on:                        windows-latest
+    steps:
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
+      - name:                       AutobuildAutobuild
+        uses:                       ./windows/autobuild
+        
+  release_apk:
+    name:                           Autobuild Android
+    runs-on:                        ubuntu-latest
+    steps:
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
+      - name:                       AutobuildAutobuild
+        uses:                       ./android/autobuild
+        
+  release_mac:
+    name:                           Autobuild MacOS
+    runs-on:                        macos-latest
+    steps:
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
+      - name:                       AutobuildAutobuild
+        uses:                       ./mac/autobuild

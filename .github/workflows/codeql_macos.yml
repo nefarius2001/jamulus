@@ -1,0 +1,42 @@
+name: "CodeQL MacOS"
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ master ]
+  schedule:
+    - cron: '23 11 * * 6'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: 'macos-latest'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Qt on MacOS
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2'
+        dir: '${{ github.workspace }}'
+
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Build elsewhere
+      run: |
+        [ -x /Users/runner/work/jamulus/jamulus/Qt/5.15.2/clang_64/bin/qmake ] && \
+          /Users/runner/work/jamulus/jamulus/Qt/5.15.2/clang_64/bin/qmake || qmake
+        make
+
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
