@@ -125,7 +125,7 @@ jobs:
         run:                        sh linux/autorelease_linux.sh ${{ github.workspace }}
       - name:                       "Build deb (Linux)"
         if:                         matrix.config.target_os == 'linux2'
-        run:                        sh autobuild/linux/autorelease_linux_codeql.sh ${{ github.workspace }}
+        run:                        sh autobuild/linux/code_ql/autorelease_linux_codeql.sh ${{ github.workspace }}
         
       - name:                       "Build (Windows)"
         if:                         matrix.config.target_os == 'windows'
