@@ -2,7 +2,7 @@
 
 on:
   workflow_dispatch:
-  push
+    push
 name:                               MyTests
 jobs:
 
