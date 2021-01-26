@@ -32,3 +32,21 @@ jobs:
       - name:                       ${{ matrix.config.config_name }}
         uses:                       ${{ matrix.config.action_path }}
           
+
+  release_win:
+    name:                           Bsdyyyyyyyys
+    steps:
+      - name:                       AutobuildAutobuild
+        uses:                       ./windows/autobuild
+        
+  release_apk:
+    name:                           Bsdaaaaaa
+    steps:
+      - name:                       AutobuildAutobuild
+        uses:                       ./android/autobuild
+        
+  release_mac:
+    name:                           MacOSMacOS
+    steps:
+      - name:                       AutobuildAutobuild
+        uses:                       ./mac/autobuild
