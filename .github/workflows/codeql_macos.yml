@@ -23,7 +23,6 @@ jobs:
       with:
         version: '5.15.2'
         dir: '${{ github.workspace }}'
-      if: matrix.os == 'macos-latest'
 
 
     # Initializes the CodeQL tools for scanning.
