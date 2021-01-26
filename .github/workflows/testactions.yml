@@ -2,31 +2,48 @@
 
 on:
   [workflow_dispatch, push]
-name:                               MyTests
+name:                               MyTests1
 jobs:        
   release_win:
-    name:                           Bsdyyyyyyyys
+    name:                           Autobuild Windows
     runs-on:                        windows-latest
     steps:
       - name:                       Checkout repository
         uses:                       actions/checkout@v2
       - name:                       AutobuildAutobuild
-        uses:                       ./windows/autobuild
+        uses:                       ./.github/actions_scripts/mytestaction1
         
   release_apk:
-    name:                           Bsdaaaaaa
+    name:                           Autobuild Android
     runs-on:                        ubuntu-latest
     steps:
       - name:                       Checkout repository
         uses:                       actions/checkout@v2
       - name:                       AutobuildAutobuild
-        uses:                       ./android/autobuild
+        uses:                       ./.github/actions_scripts/mytestaction1
+        
+  analyze:
+    name: Analyze
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'cpp' ]
+        #language: [ 'cpp', 'javascript', 'python' ]
+        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
+        # Learn more:
+        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+        os: [ 'macos-latest', 'ubuntu-latest', 'windows-latest' ]
+
+    steps:
+    - name: Check ${{ matrix.os }}
+      uses:                       ./.github/actions_scripts/mytestaction1
         
   release_mac:
-    name:                           MacOSMacOS
+    name:                           Autobuild MacOS
+    needs:                          analyze
     runs-on:                        macos-latest
     steps:
-      - name:                       Checkout repository
-        uses:                       actions/checkout@v2
       - name:                       AutobuildAutobuild
-        uses:                       ./mac/autobuild
+        uses:                       ./.github/actions_scripts/mytestaction1
