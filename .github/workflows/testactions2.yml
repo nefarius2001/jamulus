@@ -1,7 +1,7 @@
 #### Automatically build and upload releases to GitHub ####
 
 on:
-  [workflow_dispatch, push]
+  [workflow_dispatch]
 name:                               MyTests2
 jobs:        
   release_win:

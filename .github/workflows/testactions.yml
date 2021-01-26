@@ -13,14 +13,6 @@ jobs:
       - name:                       AutobuildAutobuild
         uses:                       ./.github/actions_scripts/mytestaction1
         
-  release_apk:
-    name:                           Autobuild Android
-    runs-on:                        ubuntu-latest
-    steps:
-      - name:                       Checkout repository
-        uses:                       actions/checkout@v2
-      - name:                       AutobuildAutobuild
-        uses:                       ./.github/actions_scripts/mytestaction1
         
   analyze:
     name: Analyze
@@ -37,13 +29,17 @@ jobs:
         os: [ 'macos-latest', 'ubuntu-latest', 'windows-latest' ]
 
     steps:
-    - name: Check ${{ matrix.os }}
-      uses:                       ./.github/actions_scripts/mytestaction1
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
+      - name:                       Check ${{ matrix.os }}
+        uses:                       ./.github/actions_scripts/mytestaction1
         
   release_mac:
     name:                           Autobuild MacOS
     needs:                          analyze
     runs-on:                        macos-latest
     steps:
+      - name:                       Checkout repository
+        uses:                       actions/checkout@v2
       - name:                       AutobuildAutobuild
         uses:                       ./.github/actions_scripts/mytestaction1
