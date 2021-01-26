@@ -1,0 +1,41 @@
+#### Automatically build and upload releases to GitHub ####
+
+on:
+  workflow_dispatch:
+  push
+name:                               MyTests
+jobs:
+
+  release_assets:
+    name:                           Bsdddddds
+    runs-on:                        ${{ matrix.config.building_on_os }}
+    strategy:
+      fail-fast:                    false
+      matrix: # Think of this like a foreach loop. Basically runs the steps with every combination of the contents of this. More info: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+        config:
+           - config_name:           Linux (normal)
+             target_os:             linux
+             building_on_os:        ubuntu-18.04
+           - config_name:           Linux (headless)
+             target_os:             linux
+             building_on_os:        ubuntu-18.04
+           - config_name:           MacOS
+             target_os:             macos
+             building_on_os:        macos-10.15
+           - config_name:           Windows
+             target_os:             windows
+             building_on_os:        windows-latest
+           - config_name:           AndroidAPK
+             target_os:             android
+             building_on_os:        ubuntu-18.04
+    steps:
+
+      # Checkout code
+      - name:                       Checkout code
+        uses:                       actions/checkout@v2
+        with:
+          submodules:               true
+          
+      - name:                       "Budssddid)"
+        uses:                       ./.github/actions_scripts/mytestaction1.yml
+        if:                         matrix.config.target_os == 'android'   
