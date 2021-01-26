@@ -27,5 +27,8 @@ jobs:
         uses:                       ./.github/actions_scripts/mytestaction2
           
       - name:                       ${{ matrix.config.config_name }}
+        uses:                       ${{ matrix.config.config_name }}
+          
+      - name:                       ${{ matrix.config.config_name }}
         uses:                       ${{ matrix.config.action_path }}
           
