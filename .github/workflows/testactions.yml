@@ -36,5 +36,7 @@ jobs:
           submodules:               true
           
       - name:                       "Budssddid)"
-        uses:                       ./.github/actions_scripts/mytestaction1.yml
-        if:                         matrix.config.target_os == 'android'   
+        uses:                       ./.github/actions_scripts/mytestaction1
+          
+      - name:                       "Budssddid)"
+        uses:                       ./.github/actions_scripts/mytestaction2
