@@ -6,18 +6,21 @@ name:                               MyTests
 jobs:        
   release_win:
     name:                           Bsdyyyyyyyys
+    runs-on:                        windows-latest
     steps:
       - name:                       AutobuildAutobuild
         uses:                       ./windows/autobuild
         
   release_apk:
     name:                           Bsdaaaaaa
+    runs-on:                        ubuntu-latest
     steps:
       - name:                       AutobuildAutobuild
         uses:                       ./android/autobuild
         
   release_mac:
     name:                           MacOSMacOS
+    runs-on:                        macos-latest
     steps:
       - name:                       AutobuildAutobuild
         uses:                       ./mac/autobuild
