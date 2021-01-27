@@ -75,7 +75,7 @@ $ANDROID_SDKMANAGER "build-tools;30.0.2"
 
 
 #5.15.2
-export MY_QT_VERSION 5.15.2
+export MY_QT_VERSION="5.15.2"
 
 # Download / install Qt
 ####ADD https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh ./
