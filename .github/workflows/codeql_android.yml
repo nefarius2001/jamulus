@@ -1,4 +1,4 @@
-name: "CodeQL Linux"
+name: "CodeQL Android"
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install Qt on Linux
-      run: sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ github.workspace }}
+      run:  sh autobuild/android2/auto_1_prepare.sh ${{ github.workspace }}
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -33,7 +33,7 @@ jobs:
         languages: ${{ matrix.language }}
 
     - name: Build
-      run: sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}
+      run:  sh autobuild/android2/auto_2_build_qt_project.sh ${{ github.workspace }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

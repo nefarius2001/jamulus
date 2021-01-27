@@ -31,12 +31,8 @@ jobs:
       with:
         languages: ${{ matrix.language }}
 
-    - name: Build elsewhere
-      run: |
-        [ -x /Users/runner/work/jamulus/jamulus/Qt/5.15.2/clang_64/bin/qmake ] && \
-          /Users/runner/work/jamulus/jamulus/Qt/5.15.2/clang_64/bin/qmake || qmake
-        make
-
+    - name: Build MacOS
+      run: sh autobuild/mac/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

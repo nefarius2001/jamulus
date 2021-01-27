@@ -12,7 +12,7 @@ on:
       - master
   schedule:
     - cron: '23 11 * * 6'
-name:                               Publish Release
+name:                               Auto-Build
 jobs:
   create_release:
      name:                          Create release
