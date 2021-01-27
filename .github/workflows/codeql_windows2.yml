@@ -1,4 +1,4 @@
-name: "CodeQL MacOS"
+name: "CodeQL Windows 2"
 
 on:
   push:
@@ -12,18 +12,14 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: 'macos-latest'
+    runs-on:  'windows-latest'
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install Qt on MacOS
-      uses: jurplel/install-qt-action@v2
-      with:
-        version: '5.15.2'
-        dir: '${{ github.workspace }}'
-
+    - name: prepare
+      run: powershell .\autobuild\windows\installer\auto_1_prepare.ps1 -sourcepath "${{ github.workspace }}"
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -31,8 +27,11 @@ jobs:
       with:
           languages: 'cpp' 
 
-    - name: Build MacOS
-      run: sh autobuild/mac/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}
+    - name: Visual Studio shell
+      uses: egor-tensin/vs-shell@v2
+
+    - name: Build on Windows
+      run: powershell .\autobuild\windows\installer\auto_2_build_installer.ps1 -sourcepath "${{ github.workspace }}"
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

@@ -37,7 +37,7 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
       with:
-        languages: ${{ matrix.language }}
+          languages: 'cpp' 
 
     - name: Visual Studio shell
       uses: egor-tensin/vs-shell@v2

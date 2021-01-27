@@ -14,11 +14,6 @@ jobs:
     name: Analyze
     runs-on: 'ubuntu-latest'
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'cpp' ]
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -30,7 +25,7 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
       with:
-        languages: ${{ matrix.language }}
+          languages: 'cpp' 
 
     - name: Build
       run: sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}
