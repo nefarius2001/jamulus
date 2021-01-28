@@ -120,11 +120,6 @@ jobs:
          
     runs-on:                        ${{ matrix.config.building_on_os }}
     steps:
-      - name:                       "echoo for ${{ matrix.config.config_name }}"
-        run:                        echo PREEE '${{ matrix.config.cmd1_prebuild }}'
-
-      - name:                       "echoo for ${{ matrix.config.config_name }}"
-        run:                        asdfasdfasdfasd
       # Checkout code
       - name:                       Checkout code
         uses:                       actions/checkout@v2
