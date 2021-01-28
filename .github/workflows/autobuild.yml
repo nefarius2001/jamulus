@@ -77,7 +77,8 @@ jobs:
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/Jamulus_amd64.deb
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
-             cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh $GITHUB_WORKSPACE"
+             cmd1_prebuild:         "sh test.sh *${{ needs.create_release.outputs.version }}* *${{ github.workspace }}*"
+             #cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ needs.create_release.outputs.version }}"
              cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}"
              cmd3_postbuild:        false 
              

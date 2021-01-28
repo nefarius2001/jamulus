@@ -2,6 +2,10 @@
 
 # Please run this script with the first parameter being the root of the repo
 if [ -z "${1}" ]; then
+	THIS_WORKSPACE="${1}"
+elif [ -z "${1}" ]; then
+	THIS_WORKSPACE="${GITHUB_WORKSPACE}"
+else
     echo "Please give the path to the repository root as second parameter to this script!"
     exit 1
 fi
