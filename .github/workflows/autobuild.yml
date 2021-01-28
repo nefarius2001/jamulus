@@ -67,7 +67,6 @@ jobs:
   release_assets:
     name:                           Build assets for ${{ matrix.config.config_name }}
     needs:                          create_release
-    runs-on:                        ${{ matrix.config.building_on_os }}
     strategy:
       fail-fast:                    false
       matrix: # Think of this like a foreach loop. Basically runs the steps with every combination of the contents of this. More info: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
@@ -78,9 +77,9 @@ jobs:
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/Jamulus_amd64.deb
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
-             cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh '${{ github.workspace }}'"
+             cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh $GITHUB_WORKSPACE"
              cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}"
-             cmd3_postbuild:        false
+             cmd3_postbuild:        false 
              
            - config_name:           Linux (headless)
              target_os:             linux
@@ -117,6 +116,8 @@ jobs:
              cmd1_prebuild:         false
              cmd2_build:            false
              cmd3_postbuild:        false
+         
+    runs-on:                        ${{ matrix.config.building_on_os }}
     steps:
       - name:                       "echoo for ${{ matrix.config.config_name }}"
         run:                        echo PREEE '${{ matrix.config.cmd1_prebuild }}'

@@ -65,7 +65,9 @@ mv android-ndk-r21d /opt/android/android-ndk
 
 
 # Install Android SDK
-echo yes | $ANDROID_SDKMANAGER --licenses && $ANDROID_SDKMANAGER --update
+yes | $ANDROID_SDKMANAGER --licenses
+#echo yes | $ANDROID_SDKMANAGER --licenses 
+$ANDROID_SDKMANAGER --update
 #$ANDROID_SDKMANAGER "platforms;android-17"
 #$ANDROID_SDKMANAGER "platforms;android-28"
 $ANDROID_SDKMANAGER "platforms;android-30"
