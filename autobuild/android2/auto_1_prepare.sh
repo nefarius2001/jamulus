@@ -77,7 +77,10 @@ $ANDROID_SDKMANAGER "build-tools;30.0.2"
 # Download / install Qt
 ####ADD https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh ./
 #COPY install-qt.sh /install-qt.sh
-bash ./install-qt.sh --version $MY_QT_VERSION --target android --toolchain android qtbase qt3d qtdeclarative qtandroidextras qtconnectivity qtgamepad qtlocation qtmultimedia qtquickcontrols2 qtremoteobjects qtscxml qtsensors qtserialport qtsvg qtimageformats qttools qtspeech qtwebchannel qtwebsockets qtwebview qtxmlpatterns qttranslations 
+THIS_SCRIPT=$(readlink -f "$0")
+# Absolute path this script is in, thus /home/user/bin
+THIS_SCRIPT_PATH=$(dirname "$THIS_SCRIPT")
+bash $THIS_SCRIPT_PATH/install-qt.sh --version $MY_QT_VERSION --target android --toolchain android qtbase qt3d qtdeclarative qtandroidextras qtconnectivity qtgamepad qtlocation qtmultimedia qtquickcontrols2 qtremoteobjects qtscxml qtsensors qtserialport qtsvg qtimageformats qttools qtspeech qtwebchannel qtwebsockets qtwebview qtxmlpatterns qttranslations 
 
 # Set the QTDIR environment variable
 export QTDIR="/opt/Qt/$MY_QT_VERSION/android"
