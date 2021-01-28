@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Please run this script with the first parameter being the root of the repo
 if [ -z "${1}" ]; then
@@ -8,7 +8,8 @@ fi
 
 cd ${1}
 
-$QTDIR/bin/qmake -spec android-clang CONFIG+=$CONFIG
+#$QTDIR/bin/qmake -spec android-clang CONFIG+=$CONFIG
+$QTDIR/bin/qmake -spec android-clang CONFIG+=release
 /opt/android/android-ndk/prebuilt/linux-x86_64/bin/make
 $ANDROID_NDK_ROOT/prebuilt/$ANDROID_NDK_HOST/bin/make INSTALL_ROOT=android-build -f Makefile install
 $QTDIR/bin/androiddeployqt --input $(ls *.json) --output android-build --android-platform android-30 --jdk $JAVA_HOME --gradle 

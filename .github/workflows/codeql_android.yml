@@ -22,9 +22,15 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      
+    - name: Ieeeeeee
+      run:  sh echo "sss $QTDIR"
 
     - name: Install Qt on Linux
       run:  sh autobuild/android2/auto_1_prepare.sh ${{ github.workspace }}
+      
+    - name: Ieeeeeee
+      run:  sh echo "sss $QTDIR"
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
