@@ -72,31 +72,51 @@ jobs:
       fail-fast:                    false
       matrix: # Think of this like a foreach loop. Basically runs the steps with every combination of the contents of this. More info: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
         config:
+        
            - config_name:           Linux (normal)
              target_os:             linux
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/Jamulus_amd64.deb
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
+             cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ github.workspace }}"
+             cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}"
+             cmd3_postbuild:        false
+             
            - config_name:           Linux (headless)
              target_os:             linux
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/Jamulus_headless_amd64.deb
              asset_name:            jamulus_headless_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
+             cmd1_prebuild:         false
+             cmd2_build:            false
+             cmd3_postbuild:        false
+             
            - config_name:           MacOS
              target_os:             macos
              building_on_os:        macos-10.15
              asset_path:            deploy/Jamulus-installer-mac.dmg
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_mac.dmg
-           - config_name:           Windows
+             cmd1_prebuild:         false
+             cmd2_build:            sh mac/autorelease_mac.sh ${{ github.workspace }}
+             cmd3_postbuild:        false
+             
+           - config_name:           Windows (codeql+artifact)
              target_os:             windows
              building_on_os:        windows-latest
              asset_path:            deploy\Jamulus-installer-win.exe
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_win.exe
-           - config_name:           AndroidAPK
+             cmd1_prebuild:         false
+             cmd2_build:            powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ github.workspace }}"
+             cmd3_postbuild:        false
+             
+           - config_name:           AndroidAPK (artifact)
              target_os:             android
              building_on_os:        ubuntu-18.04
              asset_path:            android-build/build/outputs/apk/debug/android-build-debug.apk
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_android.apk
+             cmd1_prebuild:         false
+             cmd2_build:            false
+             cmd3_postbuild:        false
     steps:
 
       # Checkout code
@@ -104,6 +124,11 @@ jobs:
         uses:                       actions/checkout@v2
         with:
           submodules:               true
+          
+      # Prepare (install QT & dependencies)
+      - name:                       "Prepare ${{ matrix.config.config_name }}"
+        if:                         matrix.config.cmd1_prebuild
+        run:                        matrix.config.cmd1_prebuild
           
       # Initialize CodeQL tools for code-scanning for security
       - name: Initialize CodeQL
@@ -115,16 +140,11 @@ jobs:
           # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
 
       # Build
-      - name:                       "Build deb (Linux)"
-        if:                         matrix.config.target_os == 'linux'
-        run:                        sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ github.workspace }} && sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}
-      - name:                       "Build (Windows)"
-        if:                         matrix.config.target_os == 'windows'
-        run:                        powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ github.workspace }}"
-      - name:                       "Build (macOS)"
-        if:                         matrix.config.target_os == 'macos'
-        run:                        sh mac/autorelease_mac.sh ${{ github.workspace }}
-      - name:                       "Build (Android)"
+      - name:                       "Build ${{ matrix.config.config_name }}"
+        if:                         matrix.config.cmd2_build
+        run:                        matrix.config.cmd2_build
+        
+      - name:                       "Build (Android with *uses*)"
         if:                         matrix.config.target_os == 'android'   
         uses:                       ./autobuild/android/ # Uses an action in the directory
 
