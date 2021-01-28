@@ -126,9 +126,9 @@ jobs:
           submodules:               true
           
       # Prepare (install QT & dependencies)
-      - name:                       "Prepare ${{ matrix.config.config_name }}"
-        if:                         matrix.config.cmd1_prebuild
-        run:                        matrix.config.cmd1_prebuild
+      - name:                       "Prepare for ${{ matrix.config.config_name }}"
+        if:                         ${{ matrix.config.cmd1_prebuild }}
+        run:                        ${{ matrix.config.cmd1_prebuild }}
           
       # Initialize CodeQL tools for code-scanning for security
       - name: Initialize CodeQL
@@ -140,9 +140,9 @@ jobs:
           # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
 
       # Build
-      - name:                       "Build ${{ matrix.config.config_name }}"
-        if:                         matrix.config.cmd2_build
-        run:                        matrix.config.cmd2_build
+      - name:                       "Build for ${{ matrix.config.config_name }}"
+        if:                         ${{ matrix.config.cmd2_build }}
+        run:                        ${{ matrix.config.cmd2_build }}
         
       - name:                       "Build (Android with *uses*)"
         if:                         matrix.config.target_os == 'android'   
@@ -160,6 +160,11 @@ jobs:
       - name: Perform CodeQL Analysis
         if:                         matrix.config.target_os != 'android'   
         uses: github/codeql-action/analyze@v1
+        
+      - name:                       "Post-Build for ${{ matrix.config.config_name }}"
+        if:                         ${{ matrix.config.cmd3_postbuild }}
+        run:                        ${{ matrix.config.cmd3_postbuild }}
+        
         
       # Upload Artifact to Release
       - name:                       Upload Artifact to Release
