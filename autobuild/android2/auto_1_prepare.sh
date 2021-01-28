@@ -16,6 +16,7 @@ fi
 #LABEL "version"="0.3"
 
 export DEBIAN_FRONTEND="noninteractive"
+echo "::set-env name=DEBIAN_FRONTEND::${DEBIAN_FRONTEND}"
 
 sudo apt-get  update 
 sudo apt-get -qq -y install  build-essential git zip unzip bzip2 p7zip-full wget curl chrpath libxkbcommon-x11-0 
@@ -29,6 +30,15 @@ rm -rf /var/lib/apt/lists/*
 export ANDROID_HOME="/opt/android/android-sdk"
 export ANDROID_SDK_ROOT="/opt/android/android-sdk"
 export ANDROID_NDK_ROOT="/opt/android/android-ndk"
+
+export PATH="$PATH:$ANDROID_HOME/tools"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
+
+# other variables
+export MY_QT_VERSION="5.15.2"
+export ANDROID_NDK_HOST="linux-x86_64"
+export ANDROID_SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
 # paths for Android SDK
 mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest/
@@ -53,17 +63,6 @@ unzip -q downloadfile
 rm downloadfile 
 mv android-ndk-r21d /opt/android/android-ndk
 
-# Add Android tools and platform tools to PATH
-export ANDROID_HOME="/opt/android/android-sdk"
-export ANDROID_SDK_ROOT="/opt/android/android-sdk"
-export ANDROID_NDK_ROOT="/opt/android/android-ndk"
-export PATH="$PATH:$ANDROID_HOME/tools"
-export PATH="$PATH:$ANDROID_HOME/platform-tools"
-export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/"
-
-export ANDROID_NDK_HOST="linux-x86_64"
-
-export ANDROID_SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
 # Install Android SDK
 echo yes | $ANDROID_SDKMANAGER --licenses && $ANDROID_SDKMANAGER --update
@@ -74,8 +73,6 @@ $ANDROID_SDKMANAGER "build-tools;28.0.3"
 $ANDROID_SDKMANAGER "build-tools;30.0.2"
 
 
-#5.15.2
-export MY_QT_VERSION="5.15.2"
 
 # Download / install Qt
 ####ADD https://code.qt.io/cgit/qbs/qbs.git/plain/scripts/install-qt.sh ./
@@ -86,4 +83,15 @@ bash ./install-qt.sh --version $MY_QT_VERSION --target android --toolchain andro
 export QTDIR="/opt/Qt/$MY_QT_VERSION/android"
 
 
+#necessary
+echo "::set-env name=QTDIR::${QTDIR}"
+echo "::set-env name=ANDROID_NDK_ROOT::${ANDROID_NDK_ROOT}"
+echo "::set-env name=ANDROID_NDK_HOST::${ANDROID_NDK_HOST}"
+echo "::set-env name=JAVA_HOME::${JAVA_HOME}"
 
+#nce to have
+echo "::set-env name=ANDROID_HOME::${ANDROID_HOME}"
+echo "::set-env name=ANDROID_SDK_ROOT::${ANDROID_SDK_ROOT}"
+echo "::set-env name=PATH::${PATH}"
+echo "::set-env name=MY_QT_VERSION::${MY_QT_VERSION}"
+echo "::set-env name=ANDROID_SDKMANAGER::${ANDROID_SDKMANAGER}"
