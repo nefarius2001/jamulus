@@ -28,6 +28,8 @@ jobs:
 
     - name: Install Qt on Linux
       run:  sh autobuild/android2/auto_1_prepare.sh ${{ github.workspace }}
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       
     - name: Ieeeeeee
       run:  echo "sss $QTDIR"
