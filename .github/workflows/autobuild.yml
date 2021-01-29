@@ -95,7 +95,7 @@ jobs:
              cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false 
              uses_codeql:           false
-             artifact_severity:     "warn"
+             artifact_severity:     "error"
              
            #- config_name:           Linux (artifact headless)
            #  target_os:             linux
@@ -149,7 +149,7 @@ jobs:
              cmd2_build:            false
              cmd3_postbuild:        false
              uses_codeql:           false
-             artifact_severity:     "warn"
+             artifact_severity:     "error"
          
     runs-on:                        ${{ matrix.config.building_on_os }}
     steps:
@@ -189,7 +189,7 @@ jobs:
         with:
           name:                     ${{ matrix.config.asset_name }}
           path:                     ${{ matrix.config.asset_path }}
-          if-no-files-found:        ${{ matrix.config.artifact_severity }} # 'warn' or 'ignore' are also available, defaults to `warn`
+          if-no-files-found:        ${{ matrix.config.artifact_severity }} # 'error ', 'warn', 'ignore', defaults to `warn`
           retention-days:           14
           
       # Run CodeQL tools for code-scanning for security
