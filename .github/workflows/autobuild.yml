@@ -81,7 +81,7 @@ jobs:
              asset_path:            deploy/Jamulus_amd64.deb
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
              cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
-             cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh "
              cmd3_postbuild:        false 
              uses_codeql:           true
              artifact_severity:     "warn"
@@ -91,8 +91,8 @@ jobs:
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/*
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
-             cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
-             cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh "
+             cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh "
              cmd3_postbuild:        false 
              uses_codeql:           false
              artifact_severity:     "error"
@@ -112,7 +112,7 @@ jobs:
              asset_path:            deploy/Jamulus-installer-mac.dmg
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_mac.dmg
              cmd1_prebuild:         false
-             cmd2_build:            sh mac/autorelease_mac.sh ${{ needs.create_release.outputs.x_github_workspace }}
+             cmd2_build:            sh mac/autorelease_mac.sh 
              cmd3_postbuild:        false
              uses_codeql:           false
              artifact_severity:     "warn"
@@ -123,7 +123,7 @@ jobs:
              asset_path:            deploy\Jamulus-installer-win.exe
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_win.exe
              cmd1_prebuild:         false
-             cmd2_build:            powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd2_build:            powershell .\windows\autorelease_windows.ps1 -sourcepath 
              cmd3_postbuild:        false
              uses_codeql:           true
              artifact_severity:     "warn"
@@ -134,8 +134,8 @@ jobs:
              building_on_os:        windows-latest
              asset_path:            deploy\Jamulus-installer-win.exe
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_win.exe
-             cmd1_prebuild:         powershell ./autobuild/windows/installer/auto_1_prepare.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
-             cmd2_build:            powershell ./autobuild/windows/installer/auto_2_build_installer.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd1_prebuild:         powershell ./autobuild/windows/installer/auto_1_prepare.ps1 -sourcepath 
+             cmd2_build:            powershell ./autobuild/windows/installer/auto_2_build_installer.ps1 -sourcepath 
              cmd3_postbuild:        false
              uses_codeql:           true
              artifact_severity:     "warn"
@@ -162,7 +162,7 @@ jobs:
       # Prepare (install QT & dependencies)
       - name:                       "Prepare for ${{ matrix.config.config_name }}"
         if:                         ${{ matrix.config.cmd1_prebuild }}
-        run:                        ${{ matrix.config.cmd1_prebuild }}
+        run:                        ${{ matrix.config.cmd1_prebuild }} ${{ github.workspace }}
           
       # Initialize CodeQL tools for code-scanning for security
       - name:                       Initialize CodeQL
@@ -176,8 +176,8 @@ jobs:
 
       # Build
       - name:                       "Build for ${{ matrix.config.config_name }}"
-        if:                         ${{ matrix.config.cmd2_build }}
-        run:                        ${{ matrix.config.cmd2_build }}
+        if:                         ${{ matrix.config.cmd2_build }} 
+        run:                        ${{ matrix.config.cmd2_build }} ${{ github.workspace }}
         
       - name:                       "Build (Android with *uses*)"
         if:                         matrix.config.target_os == 'android'   
@@ -199,7 +199,7 @@ jobs:
         
       - name:                       "Post-Build for ${{ matrix.config.config_name }}"
         if:                         ${{ matrix.config.cmd3_postbuild }}
-        run:                        ${{ matrix.config.cmd3_postbuild }}
+        run:                        ${{ matrix.config.cmd3_postbuild }} ${{ github.workspace }}
         
         
       # Upload Artifact to Release
