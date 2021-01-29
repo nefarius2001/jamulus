@@ -44,6 +44,16 @@ jobs:
 
     - name: Build
       run:  sh autobuild/android2/auto_2_build_qt_project.sh ${{ github.workspace }}
+      
+
+    # Upload Artifact to Job
+    - name:                       Upload Artifact to Job
+      uses:                       actions/upload-artifact@v2
+      with:
+        name:                     jamulus__android.apk
+        path:                     android-build/build/outputs/apk/debug/android-build-debug.apk
+        retention-days:           14
+
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

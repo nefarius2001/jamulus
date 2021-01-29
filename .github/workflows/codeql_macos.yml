@@ -34,5 +34,13 @@ jobs:
     - name: Build MacOS
       run: sh autobuild/mac/codeQL/auto_2_build_qt_project.sh ${{ github.workspace }}
 
+    # Upload Artifact to Job
+    - name:                       Upload Artifact to Job
+      uses:                       actions/upload-artifact@v2
+      with:
+        name:                     jamulus__mac.dmg
+        path:                     deploy/Jamulus-installer-mac.dmg
+        retention-days:           14
+             
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
