@@ -14,6 +14,11 @@ echo "Install dependencies..."
 brew install qt5
 brew link qt5 --force
 
+echo "find deploy script..."
+ls ${1}/*
+echo "find deploy script..."
+ls ${1}/mac/*
+
 echo "Run deploy script..."
 sh ${1}/mac/deploy_mac.sh
 
