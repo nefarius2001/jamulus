@@ -72,8 +72,6 @@ if fullref.startswith("refs/tags/"):
         print('this reference is a Non-Release-Tag')
         publish_to_release = False
         is_prerelease = True # just in case
-    
-        
     if pushed_name == "latest":
         print('this reference is a Latest-Tag')
         publish_to_release = True

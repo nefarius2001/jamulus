@@ -35,3 +35,11 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
+
+    # Upload Artifact to Job
+    - name:                       Upload Artifact to Job
+      uses:                       actions/upload-artifact@v2
+      with:
+        name:                     jamulus_${{ needs.create_release.outputs.version_name }}_win.exe
+        path:                     deploy\Jamulus-installer-win.exe
+        retention-days:           14
