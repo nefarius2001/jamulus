@@ -15,7 +15,7 @@ brew install qt5
 brew link qt5 --force
 
 echo "find deploy script..."
-ls ${1}/*
+ls ${1}
 echo "find deploy script..."
 ls ${1}/mac/*
 

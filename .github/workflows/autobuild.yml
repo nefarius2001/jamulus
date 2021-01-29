@@ -84,6 +84,7 @@ jobs:
              cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false 
              uses_codeql:           true
+             artifact_severity:     "warn"
         
            - config_name:           Linux (artifacts)
              target_os:             linux
@@ -94,6 +95,7 @@ jobs:
              cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false 
              uses_codeql:           false
+             artifact_severity:     "warn"
              
            #- config_name:           Linux (artifact headless)
            #  target_os:             linux
@@ -113,6 +115,7 @@ jobs:
              cmd2_build:            sh mac/autorelease_mac.sh ${{ needs.create_release.outputs.x_github_workspace }}
              cmd3_postbuild:        false
              uses_codeql:           false
+             artifact_severity:     "warn"
              
            - config_name:           Windows (onescript)
              target_os:             windows
@@ -123,6 +126,7 @@ jobs:
              cmd2_build:            powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false
              uses_codeql:           true
+             artifact_severity:     "warn"
              
              
            - config_name:           Windows (twosteps installer)
@@ -134,6 +138,7 @@ jobs:
              cmd2_build:            powershell ./autobuild/windows/installer/auto_2_build_installer.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false
              uses_codeql:           true
+             artifact_severity:     "warn"
              
            - config_name:           AndroidAPK (artifact)
              target_os:             android
@@ -144,6 +149,7 @@ jobs:
              cmd2_build:            false
              cmd3_postbuild:        false
              uses_codeql:           false
+             artifact_severity:     "warn"
          
     runs-on:                        ${{ matrix.config.building_on_os }}
     steps:
@@ -183,6 +189,7 @@ jobs:
         with:
           name:                     ${{ matrix.config.asset_name }}
           path:                     ${{ matrix.config.asset_path }}
+          if-no-files-found:        ${{ matrix.config.artifact_severity }} # 'warn' or 'ignore' are also available, defaults to `warn`
           retention-days:           14
           
       # Run CodeQL tools for code-scanning for security
