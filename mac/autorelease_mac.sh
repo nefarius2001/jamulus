@@ -14,6 +14,10 @@ echo "Install dependencies..."
 brew install qt5
 brew link qt5 --force
 
+echo "find  script..."
+echo "$0"
+echo "find  script..."
+echo realpath "$0"
 echo "find deploy script..."
 ls ${1}
 echo "find deploy script..."
