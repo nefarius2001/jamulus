@@ -83,24 +83,26 @@ jobs:
              cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false 
+             uses_codeql:           true
         
-           - config_name:           Linux (artifact normal)
+           - config_name:           Linux (artifacts)
              target_os:             linux
              building_on_os:        ubuntu-18.04
-             asset_path:            deploy/Jamulus_amd64.deb
+             asset_path:            deploy/*
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
              cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false 
+             uses_codeql:           false
              
-           - config_name:           Linux (artifact headless)
-             target_os:             linux
-             building_on_os:        ubuntu-18.04
-             asset_path:            deploy/Jamulus_headless_amd64.deb
-             asset_name:            jamulus_headless_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
-             cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
-             cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
-             cmd3_postbuild:        false
+           #- config_name:           Linux (artifact headless)
+           #  target_os:             linux
+           #  building_on_os:        ubuntu-18.04
+           #  asset_path:            deploy/Jamulus_headless_amd64.deb
+           #  asset_name:            jamulus_headless_${{ needs.create_release.outputs.version_name #}}_ubuntu_amd64.deb
+           #  cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+           #  cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+           #  cmd3_postbuild:        false
              
            - config_name:           MacOS
              target_os:             macos
@@ -110,6 +112,7 @@ jobs:
              cmd1_prebuild:         false
              cmd2_build:            sh mac/autorelease_mac.sh ${{ needs.create_release.outputs.x_github_workspace }}
              cmd3_postbuild:        false
+             uses_codeql:           false
              
            - config_name:           Windows (onescript)
              target_os:             windows
@@ -119,6 +122,7 @@ jobs:
              cmd1_prebuild:         false
              cmd2_build:            powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false
+             uses_codeql:           true
              
              
            - config_name:           Windows (twosteps installer)
@@ -129,6 +133,7 @@ jobs:
              cmd1_prebuild:         powershell ./autobuild/windows/installer/auto_1_prepare.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
              cmd2_build:            powershell ./autobuild/windows/installer/auto_2_build_installer.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false
+             uses_codeql:           true
              
            - config_name:           AndroidAPK (artifact)
              target_os:             android
@@ -138,6 +143,7 @@ jobs:
              cmd1_prebuild:         false
              cmd2_build:            false
              cmd3_postbuild:        false
+             uses_codeql:           false
          
     runs-on:                        ${{ matrix.config.building_on_os }}
     steps:
@@ -153,8 +159,9 @@ jobs:
         run:                        ${{ matrix.config.cmd1_prebuild }}
           
       # Initialize CodeQL tools for code-scanning for security
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
+      - name:                       Initialize CodeQL
+        if:                         matrix.config.uses_codeql 
+        uses:                       github/codeql-action/init@v1
         with:
           languages: 'cpp' 
           # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
@@ -179,9 +186,9 @@ jobs:
           retention-days:           14
           
       # Run CodeQL tools for code-scanning for security
-      - name: Perform CodeQL Analysis
-        if:                         matrix.config.target_os != 'android'   
-        uses: github/codeql-action/analyze@v1
+      - name:                       Perform CodeQL Analysis
+        if:                         matrix.config.uses_codeql   
+        uses:                       github/codeql-action/analyze@v1
         
       - name:                       "Post-Build for ${{ matrix.config.config_name }}"
         if:                         ${{ matrix.config.cmd3_postbuild }}
