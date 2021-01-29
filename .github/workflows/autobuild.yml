@@ -23,6 +23,8 @@ jobs:
       version:                      ${{ steps.jamulus-build-vars.outputs.JAMULUS_VERSION }}
       version_name:                 ${{ steps.jamulus-build-vars.outputs.RELEASE_VERSION_NAME }}
       x_github_workspace:           ${{ steps.jamulus-build-vars.outputs.X_GITHUB_WORKSPACE }} #needed, because matrix can not directly access ${{ github.workspace }} aparrently
+      build_flatpack:               ${{ steps.jamulus-build-vars.outputs.BUILD_FLATPACK }}
+      
 
      steps:
          # Checkout code
@@ -73,7 +75,7 @@ jobs:
       matrix: # Think of this like a foreach loop. Basically runs the steps with every combination of the contents of this. More info: https://docs.github.com/en/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
         config:
         
-           - config_name:           Linux (normal)
+           - config_name:           Linux (codeQL)
              target_os:             linux
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/Jamulus_amd64.deb
@@ -81,14 +83,23 @@ jobs:
              cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false 
+        
+           - config_name:           Linux (normal)
+             target_os:             linux
+             building_on_os:        ubuntu-18.04
+             asset_path:            deploy/Jamulus_amd64.deb
+             asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
+             cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd3_postbuild:        false 
              
            - config_name:           Linux (headless)
              target_os:             linux
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/Jamulus_headless_amd64.deb
              asset_name:            jamulus_headless_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
-             cmd1_prebuild:         false
-             cmd2_build:            false
+             cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false
              
            - config_name:           MacOS
@@ -100,13 +111,23 @@ jobs:
              cmd2_build:            sh mac/autorelease_mac.sh ${{ needs.create_release.outputs.x_github_workspace }}
              cmd3_postbuild:        false
              
-           - config_name:           Windows (codeql+artifact)
+           - config_name:           Windows (onescript)
              target_os:             windows
              building_on_os:        windows-latest
              asset_path:            deploy\Jamulus-installer-win.exe
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_win.exe
              cmd1_prebuild:         false
              cmd2_build:            powershell .\windows\autorelease_windows.ps1 -sourcepath "${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd3_postbuild:        false
+             
+             
+           - config_name:           Windows (twosteps installer)
+             target_os:             windows
+             building_on_os:        windows-latest
+             asset_path:            deploy\Jamulus-installer-win.exe
+             asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_win.exe
+             cmd1_prebuild:         "sh autobuild/windows/installer/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd2_build:            "sh autobuild/windows/installer/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
              cmd3_postbuild:        false
              
            - config_name:           AndroidAPK (artifact)
@@ -183,7 +204,7 @@ jobs:
   ## Builds a Linux flatpack ##
   flatpak-builder:
     name: "Flatpak Builder"
-    if:                         ${{ contains(needs.create_release.outputs.publish_to_release, 'true') }}
+    if:                         ${{ contains(needs.create_release.outputs.build_flatpack, 'true') }}
     runs-on: ubuntu-latest
     needs: [create_release]
     container:
