@@ -80,7 +80,7 @@ jobs:
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/Jamulus_amd64.deb
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
-             cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh ${{ needs.create_release.outputs.x_github_workspace }}"
+             cmd1_prebuild:         "sh autobuild/linux/codeQL/auto_1_prepare.sh "
              cmd2_build:            "sh autobuild/linux/codeQL/auto_2_build_qt_project.sh "
              cmd3_postbuild:        false 
              uses_codeql:           true
@@ -91,10 +91,10 @@ jobs:
              building_on_os:        ubuntu-18.04
              asset_path:            deploy/*
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_ubuntu_amd64.deb
-             cmd1_prebuild:         "sh autobuild/linux/normal/auto_1_prepare.sh "
-             cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh "
-             cmd3_postbuild:        false 
-             uses_codeql:           false
+             cmd1_prebuild:         "sh autobuild/linux/normal/autobuild_deb_1_prepare.sh "
+             cmd2_build:            "sh autobuild/linux/normal/autobuild_deb_2_build.sh "
+             cmd3_postbuild:        "sh autobuild/linux/normal/autobuild_deb_3_copy_files.sh "
+             uses_codeql:           true
              artifact_severity:     "error"
              
            #- config_name:           Linux (artifact headless)
@@ -106,7 +106,7 @@ jobs:
            #  cmd2_build:            "sh autobuild/linux/normal/auto_2_build_qt_project.sh ${{ needs.create_release.outputs.x_github_workspace }}"
            #  cmd3_postbuild:        false
              
-           - config_name:           MacOS
+           - config_name:           MacOS (artifact)
              target_os:             macos
              building_on_os:        macos-10.15
              asset_path:            deploy/Jamulus-installer-mac.dmg
@@ -114,22 +114,10 @@ jobs:
              cmd1_prebuild:         false
              cmd2_build:            sh mac/autorelease_mac.sh 
              cmd3_postbuild:        false
-             uses_codeql:           false
-             artifact_severity:     "warn"
-             
-           - config_name:           Windows (onescript)
-             target_os:             windows
-             building_on_os:        windows-latest
-             asset_path:            deploy\Jamulus-installer-win.exe
-             asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_win.exe
-             cmd1_prebuild:         false
-             cmd2_build:            powershell .\windows\autorelease_windows.ps1 -sourcepath 
-             cmd3_postbuild:        false
              uses_codeql:           true
              artifact_severity:     "warn"
              
-             
-           - config_name:           Windows (twosteps installer)
+           - config_name:           Windows (artifact+codeql)
              target_os:             windows
              building_on_os:        windows-latest
              asset_path:            deploy\Jamulus-installer-win.exe
@@ -140,15 +128,26 @@ jobs:
              uses_codeql:           true
              artifact_severity:     "warn"
              
-           - config_name:           AndroidAPK (artifact)
+           #- config_name:           AndroidAPK (artifact)
+           #  target_os:             android
+           #  building_on_os:        ubuntu-18.04
+           #  asset_path:            android-build/build/outputs/apk/debug/android-build-debug.apk
+           #  asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_android.apk
+           #  cmd1_prebuild:         false
+           #  cmd2_build:            false
+           #  cmd3_postbuild:        false
+           #  uses_codeql:           false
+           #  artifact_severity:     "error"
+             
+           - config_name:           AndroidAPK (artifact+codeql)
              target_os:             android
              building_on_os:        ubuntu-18.04
              asset_path:            android-build/build/outputs/apk/debug/android-build-debug.apk
              asset_name:            jamulus_${{ needs.create_release.outputs.version_name }}_android.apk
-             cmd1_prebuild:         false
-             cmd2_build:            false
-             cmd3_postbuild:        false
-             uses_codeql:           false
+             cmd1_prebuild:         "sh autobuild/android/autobuild_apk_1_prepare.sh "
+             cmd2_build:            "sh autobuild/android/autobuild_apk_2_build.sh "
+             cmd3_postbuild:        "sh autobuild/android/autobuild_apk_3_copy_files.sh "
+             uses_codeql:           true
              artifact_severity:     "error"
          
     runs-on:                        ${{ matrix.config.building_on_os }}
@@ -163,6 +162,8 @@ jobs:
       - name:                       "Prepare for ${{ matrix.config.config_name }}"
         if:                         ${{ matrix.config.cmd1_prebuild }}
         run:                        ${{ matrix.config.cmd1_prebuild }} ${{ github.workspace }}
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'  # allow setting environment variables
           
       # Initialize CodeQL tools for code-scanning for security
       - name:                       Initialize CodeQL
@@ -179,15 +180,21 @@ jobs:
         if:                         ${{ matrix.config.cmd2_build }} 
         run:                        ${{ matrix.config.cmd2_build }} ${{ github.workspace }}
         
-      - name:                       "Build (Android with *uses*)"
-        if:                         matrix.config.target_os == 'android'   
-        uses:                       ./autobuild/android/ # Uses an action in the directory
+      #- name:                       "Build (Android with *uses*)"
+      #  if:                         matrix.config.target_os == 'android'   
+      #  uses:                       ./autobuild/android/ # Uses an action in the directory
+        
+      - name:                       "Post-Build for ${{ matrix.config.config_name }}"
+        if:                         ${{ matrix.config.cmd3_postbuild }}
+        run:                        ${{ matrix.config.cmd3_postbuild }} ${{ github.workspace }}
+        env:
+          jamulus_version_name:     ${{ needs.create_release.outputs.version_name }}
 
       # Upload Artifact to Job
       - name:                       Upload Artifact to Job
         uses:                       actions/upload-artifact@v2
         with:
-          name:                     ${{ matrix.config.asset_name }}
+          #name:                     ${{ matrix.config.asset_name }}
           path:                     ${{ matrix.config.asset_path }}
           if-no-files-found:        ${{ matrix.config.artifact_severity }} # 'error ', 'warn', 'ignore', defaults to `warn`
           retention-days:           14
@@ -196,10 +203,6 @@ jobs:
       - name:                       Perform CodeQL Analysis
         if:                         matrix.config.uses_codeql   
         uses:                       github/codeql-action/analyze@v1
-        
-      - name:                       "Post-Build for ${{ matrix.config.config_name }}"
-        if:                         ${{ matrix.config.cmd3_postbuild }}
-        run:                        ${{ matrix.config.cmd3_postbuild }} ${{ github.workspace }}
         
         
       # Upload Artifact to Release
@@ -217,7 +220,7 @@ jobs:
           
   ## Builds a Linux flatpack ##
   flatpak-builder:
-    name: "Flatpak Builder"
+    name: "Build Flatpak (artifact)"
     if:                         ${{ contains(needs.create_release.outputs.build_flatpack, 'true') }}
     runs-on: ubuntu-latest
     needs: [create_release]
@@ -239,7 +242,6 @@ jobs:
       with:
         name:                     io.jamulus.Jamulus
         path:                     ~/io.jamulus.Jamulus
-        retention-days:           14
         
     # Upload Artifact to Release
     - name:                       Upload Flatpack
