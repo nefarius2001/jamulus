@@ -1,4 +1,9 @@
+# Sets up the environment for autobuild on Windows
+
 param(
+	# Get the source path via parameter
+	[string] $sourcepath,
+	
     # Replace default path with system Qt installation folder if necessary
     [string] $QtInstallPath = "C:\Qt\5.12.3",
     [string] $QtCompile32 = "msvc2019",
@@ -11,8 +16,9 @@ param(
     [string] $NSProcessUrl = "http://forums.winamp.com/attachment.php?attachmentid=54705&d=1610882327"
 )
 
-# change directory to the directory above (if needed)
-Set-Location -Path "$PSScriptRoot\..\"
+# change directory to the repository-root-directory 
+Set-Location -Path "$PSScriptRoot\..\..\..\"
+#Set-Location -Path "$sourcepath"
 
 # Global constants
 $RootPath = "$PWD"
