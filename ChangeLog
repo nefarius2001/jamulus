@@ -1,32 +1,23 @@
 
 
+### 3.7.0 <- NOTE: the release version number will be 3.7.1 ###
+
+- bla
+
+- bla
+
+- bla
 
 
-### 3.6.2dev <- NOTE: the release version number will be 3.7.0 ###
+### 3.6.3 (fake fake) ###
 
-- introduced new server lists: Any Genre 2, Choral/Barbershop (#875)
+- FAKE  FAKE  FAKE  FAKE  FAKE  FAKE  FAKE 
 
-- show --clientname as first word in title to avoid clipping in Windows task bar (#789)
+- FAKE  FAKE  FAKE  FAKE  FAKE  FAKE  FAKE 
 
-- improved Windows installer, coded by ann0see and doloopuntil (#792, #841)
+- FAKE  FAKE  FAKE  FAKE  FAKE  FAKE  FAKE 
 
-- support http links in the chat dialog, coded by hoffie (#879)
-
-- support Github actions for CodeQL, Publish Release, Autobuild Flatpak,
-  coded by pljones, ann0see, ranfdev
-
-- more detailed version number of unreleased version, coded by nefarius2001 (#475)
-
-- remove ConsoleWriterFactory (#926)
-
-- add new --serverpublicip option to support central servers behind NAT,
-  coded by hoffie (#954)
-
-- replaced low-quality background image (fancy skin) of mixerboard (#970)
-
-- Escape chat messages at the server. This will no longer allow html formated chat messages due to security reasons (#939)
-
-TODO fix crash if settings are changed in ASIO4All during a connection (contained in #796)
+TODO: FAKE  FAKE  FAKE  FAKE  FAKE  FAKE  FAKE 
 
 
 
