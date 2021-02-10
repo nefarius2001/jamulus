@@ -176,6 +176,7 @@ jobs:
           name:                     ${{ steps.step_cmd3_postbuild.outputs.artifact_1 }}
           path:                     deploy/${{ steps.step_cmd3_postbuild.outputs.artifact_1 }}
           retention-days:           31
+          if-no-files-found:        error # 'warn' or 'ignore' are also available, defaults to `warn`
           
       # Upload Artifact to Job
       - name:                       Upload Artifact 2 to Job
@@ -185,6 +186,7 @@ jobs:
           name:                     ${{ steps.step_cmd3_postbuild.outputs.artifact_2 }}
           path:                     deploy/${{ steps.step_cmd3_postbuild.outputs.artifact_2 }}
           retention-days:           31
+          if-no-files-found:        error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       # Upload Artifact to Release
       - name:                       Upload Artifact 1 to Release
