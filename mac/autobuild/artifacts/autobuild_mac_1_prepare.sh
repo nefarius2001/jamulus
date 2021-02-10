@@ -8,23 +8,15 @@ if [ -z "${1}" ]; then
     exit 1
 fi
 
-cd ${1}
+cd "${1}"
 
 echo "Install dependencies..."
-brew install qt5
-brew link qt5 --force
+#brew install qt5
+#brew link qt5 --force
+python3 -m pip install aqtinstall
 
+python3 -m aqt install --outputdir /usr/local/opt/qt 5.9.9 mac desktop
+# add the qt binaries to the path
 
+export PATH=/usr/local/opt/qt/5.9.9/clang_64/bin:"${PATH}"
 
-
-
-
-
-echo "find  script..."
-echo "$0"
-echo "find  script..."
-echo realpath "$0"
-echo "find deploy script..."
-ls ${1}
-echo "find deploy script..."
-ls ${1}/mac/*
