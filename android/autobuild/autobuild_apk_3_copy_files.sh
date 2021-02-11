@@ -37,8 +37,8 @@ echo ""
 
 github_output_value()
 {
-  echo "github_output_value() ${THIS_JAMULUS_PROJECT_PATH} = ${2}"
-  echo "::set-output name=${THIS_JAMULUS_PROJECT_PATH}::${2}"
+  echo "github_output_value() ${1} = ${2}"
+  echo "::set-output name=${1}::${2}"
 }
 
 github_output_value artifact_1 ${artifact_deploy_filename}
