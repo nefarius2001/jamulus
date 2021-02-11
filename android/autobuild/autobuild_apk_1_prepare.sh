@@ -1,24 +1,10 @@
 #!/bin/sh -e
 
-# Please run this script with the first parameter being the root of the repo
-if [ -z "${1}" ]; then
-    echo "Please give the path to the repository root as second parameter to this script!"
-    exit 1
-fi
-#if [ ! -z "${1}" ]; then
-#	THIS_WORKSPACE="${1}"
-#elif [ ! -z "${1}" ]; then
-#	THIS_WORKSPACE="${GITHUB_WORKSPACE}"
-#else
-#    echo "Please give the path to the repository root as second parameter to this script!"
-#    exit 1
-#fi
+# autobuild_1_prepare: set up environment, install Qt & dependencies
 
-# Sets up the environment for autobuild on Linux
 
 
 #FROM ubuntu:18.04
-
 #based on https://gitlab.com/vikingsoftware/qt5.12.4androiddocker
 #LABEL "Maintainer"="Guenter Schwann"
 #LABEL "version"="0.3"

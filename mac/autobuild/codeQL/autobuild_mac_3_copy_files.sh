@@ -1,8 +1,7 @@
 #!/bin/bash
 
+# autobuild_3_copy_files: copy the built files to deploy folder
 
-# Sets up the environment for autobuild on Linux
 
-#USING GITHUB ACTION HERE
 
 echo "no action here"

@@ -1,7 +1,19 @@
 #!/bin/bash
 
+# autobuild_1_prepare: set up environment, install Qt & dependencies
 
-# Sets up the environment for autobuild on Linux
+if [ ! -z "${1}" ]; then
+	THIS_JAMULUS_PROJECT_PATH="${1}"
+elif [ ! -z "${jamulus_project_path}" ]; then
+	THIS_JAMULUS_PROJECT_PATH="${jamulus_project_path}"
+elif [ ! -z "${GITHUB_WORKSPACE}" ]; then
+	THIS_JAMULUS_PROJECT_PATH="${GITHUB_WORKSPACE}"
+else
+    echo "Please give the path to the repository root as environment variable 'jamulus_project_path' or parameter to this script!"
+    exit 1
+fi
+
+
 
 #USING GITHUB ACTION HERE
 #
@@ -14,8 +26,8 @@
 
 
 # please run this script with the first parameter being the root of the repo
-if [ -z "${1}" ]; then
-    echo "Please give the path to the repository root as second parameter to this script!"
+if [ -z "${jamulus_project_path}" ]; then
+    echo "Please give the path to the repository root as environment parameter 'jamulus_project_path' to this script!"
     exit 1
 fi
 

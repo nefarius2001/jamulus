@@ -120,9 +120,9 @@ jobs:
            - config_name:           Windows (artifact+codeql)
              target_os:             windows
              building_on_os:        windows-latest
-             cmd1_prebuild:         powershell ./windows/autobuild/autobuild_windowsinstaller_1_prepare.ps1 -sourcepath 
-             cmd2_build:            powershell ./windows/autobuild/autobuild_windowsinstaller_2_build.ps1 -sourcepath 
-             cmd3_postbuild:        powershell ./windows/autobuild/autobuild_windowsinstaller_3_copy_files.ps1 -sourcepath 
+             cmd1_prebuild:         powershell ./windows/autobuild/autobuild_windowsinstaller_1_prepare.ps1
+             cmd2_build:            powershell ./windows/autobuild/autobuild_windowsinstaller_2_build.ps1
+             cmd3_postbuild:        powershell ./windows/autobuild/autobuild_windowsinstaller_3_copy_files.ps1
              uses_codeql:           true 
          
     runs-on:                        ${{ matrix.config.building_on_os }}
@@ -136,7 +136,7 @@ jobs:
       # Prepare (install QT & dependencies)
       - name:                       "Prepare for ${{ matrix.config.config_name }}"
         if:                         ${{ matrix.config.cmd1_prebuild }}
-        run:                        ${{ matrix.config.cmd1_prebuild }} ${{ github.workspace }}
+        run:                        ${{ matrix.config.cmd1_prebuild }}
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'  # allow setting environment variables
           jamulus_project_path:     ${{ github.workspace }}
