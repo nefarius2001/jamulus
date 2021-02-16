@@ -16,6 +16,7 @@ export DEBIAN_FRONTEND="noninteractive"
 echo "::set-env name=DEBIAN_FRONTEND::${DEBIAN_FRONTEND}"
 
 sudo apt-get  update
+sudo apt-get -qq -y install tzdata
 sudo apt-get -qq -y install  build-essential git zip unzip bzip2 p7zip-full wget curl chrpath libxkbcommon-x11-0
 # Dependencies to create Android pkg
 sudo apt-get -qq -y install  openjdk-8-jre openjdk-8-jdk openjdk-8-jdk-headless gradle
