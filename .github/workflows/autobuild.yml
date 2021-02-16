@@ -163,7 +163,7 @@ jobs:
 
       # Initialize CodeQL tools for code-scanning for security
       - name:                       Initialize CodeQL
-        if:                         matrix.config.uses_codeql
+        if:                         false
         uses:                       github/codeql-action/init@v1
         with:
           languages: 'cpp'
@@ -234,6 +234,6 @@ jobs:
 
       # Run CodeQL tools for code-scanning for security
       - name:                       Perform CodeQL Analysis
-        if:                         matrix.config.uses_codeql
+        if:                         false
         uses:                       github/codeql-action/analyze@v1
 
