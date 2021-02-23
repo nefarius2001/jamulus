@@ -13,9 +13,13 @@ source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/../ensure_THIS_JAMULUS_PROJ
 ###  PROCEDURE  ###
 ###################
 
+cd "${THIS_JAMULUS_PROJECT_PATH}"
 
-mkdir ${THIS_JAMULUS_PROJECT_PATH}/deploy
-
+if [ "${1}" = "headless" ]; then
+  artifact_deploy_filename=jamulus-headless_${jamulus_buildversionstring}_ubuntu_amd64.deb
+else
+  artifact_deploy_filename=jamulus_${jamulus_buildversionstring}_ubuntu_amd64.deb
+fi
 
 echo ""
 echo ""
@@ -29,39 +33,17 @@ echo "ls GITROOT/../"
 ls "${THIS_JAMULUS_PROJECT_PATH}"/../
 echo ""
 
-#debuild -b -us -uc -aarmhf
-# copy for auto release
-#cp ${THIS_JAMULUS_PROJECT_PATH}/../*.deb ${THIS_JAMULUS_PROJECT_PATH}/deploy/
+echo ""
+echo ""
+echo "Move/Rename the built file to deploy/${artifact_deploy_filename}"
+
+mv "${THIS_JAMULUS_PROJECT_PATH}"/deploy/jamulus*_amd64.deb "${THIS_JAMULUS_PROJECT_PATH}"/deploy/"${artifact_deploy_filename}"
 
 echo ""
 echo ""
 echo "ls GITROOT/deploy/"
 ls "${THIS_JAMULUS_PROJECT_PATH}"/deploy/
 echo ""
-
-
-
-#move/rename headless first, so wildcard pattern matches only one file each
-echo ""
-echo ""
-artifact_deploy_filename_1=jamulus_headless_${jamulus_buildversionstring}_ubuntu_amd64.deb
-echo "Move/Rename the built file to deploy/${artifact_deploy_filename_1}"
-mv "${THIS_JAMULUS_PROJECT_PATH}"/../jamulus-headless*_amd64.deb "${THIS_JAMULUS_PROJECT_PATH}"/deploy/"${artifact_deploy_filename_1}"
-
-#move/rename normal second
-echo ""
-echo ""
-artifact_deploy_filename_2=jamulus_${jamulus_buildversionstring}_ubuntu_amd64.deb
-echo "Move/Rename the built file to deploy/${artifact_deploy_filename_2}"
-mv "${THIS_JAMULUS_PROJECT_PATH}"/../jamulus*_amd64.deb "${THIS_JAMULUS_PROJECT_PATH}"/deploy/"${artifact_deploy_filename_2}"
-
-
-echo ""
-echo ""
-echo "ls GITROOT/deploy/"
-ls "${THIS_JAMULUS_PROJECT_PATH}"/deploy/
-echo ""
-
 
 github_output_value()
 {
@@ -69,5 +51,4 @@ github_output_value()
   echo "::set-output name=${1}::${2}"
 }
 
-github_output_value artifact_1 ${artifact_deploy_filename_1}
-github_output_value artifact_2 ${artifact_deploy_filename_2}
+github_output_value artifact_1 ${artifact_deploy_filename}

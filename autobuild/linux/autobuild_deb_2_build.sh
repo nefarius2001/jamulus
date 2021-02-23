@@ -15,4 +15,8 @@ source $(dirname $(readlink -f "${BASH_SOURCE[0]}"))/../ensure_THIS_JAMULUS_PROJ
 
 cd "${THIS_JAMULUS_PROJECT_PATH}"/distributions
 
-sh ./build-debian-package-auto.sh
+if [ "${1}" = "headless" ]; then
+  sh ./build-debian-package-auto.sh headless
+else
+  sh ./build-debian-package-auto.sh
+fi
