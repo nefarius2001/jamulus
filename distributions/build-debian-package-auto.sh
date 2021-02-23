@@ -20,8 +20,6 @@ VERSION=$(cat Jamulus.pro | grep -oP 'VERSION = \K\w[^\s\\]*')
 
 CHANGELOGCONTENT="$(perl .github/actions_scripts/getChangelog.pl ChangeLog ${VERSION})"
 dch "${CHANGELOGCONTENT}" -v "${VERSION}"
-# patch the control file
-# cp the modified control file here
 
 
 echo "${VERSION} building..."
@@ -29,3 +27,12 @@ echo "${VERSION} building..."
 sed -i "s/é&%JAMVERSION%&è/${VERSION}/g" debian/control
 
 debuild -b -us -uc
+# create deploy folder
+
+mkdir deploy
+
+if [ "${1}" = "headless" ]; then
+  mv "/../jamulus-headless*_amd64.deb" deploy/
+else
+  mv "/../jamulus*_amd64.deb" deploy/
+fi
