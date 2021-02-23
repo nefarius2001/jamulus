@@ -68,37 +68,65 @@ os.system('perl "{}"/.github/actions_scripts/getChangelog.pl "{}"/ChangeLog "{}"
     os.environ['GITHUB_WORKSPACE']
 ))
 
+#release types: [ publish_to_release, is_prerelease ]
+RELEASE_TYPE_NONE       = [ False, True ]
+RELEASE_TYPE_RELEASE    = [ True, False ]
+RELEASE_TYPE_PRERELEASE = [ True, True ]
+
 # decisions about release, prerelease, title and tag
+release_type = RELEASE_TYPE_NONE
+is_prerelease = True
+
 if fullref.startswith("refs/tags/"):
     print('this reference is a Tag')
     release_tag = pushed_name # tag already exists
-    release_title="Release {}  ({})".format(release_version_name, pushed_name)
+    release_title="Release {}".format(release_version_name)
     
     if pushed_name.startswith("r"):
         if "beta" in pushed_name:
             print('this reference is a Beta-Release-Tag')
-            publish_to_release = True
-            is_prerelease = True
+            release_type = RELEASE_TYPE_RELEASE
         else:
             print('this reference is a Release-Tag')
-            publish_to_release = True
-            is_prerelease = False
+            release_type = RELEASE_TYPE_PRERELEASE
     else:
         print('this reference is a Non-Release-Tag')
-        publish_to_release = False
-        is_prerelease = True # just in case
+        release_type = RELEASE_TYPE_NONE
 elif fullref.startswith("refs/heads/"):
     print('this reference is a Head/Branch')
-    publish_to_release = False
-    is_prerelease = True
+    release_type = RELEASE_TYPE_NONE
     release_title='Pre-Release of "{}"'.format(pushed_name)
     release_tag = "releasetag/"+pushed_name #better not use pure pushed name, creates a tag with the name of the branch, leads to ambiguous references => can not push to this branch easily
 else:
     print('unknown git-reference type: ' + fullref)
-    publish_to_release = False
-    is_prerelease = True
+    release_type = RELEASE_TYPE_NONE
     release_title='Pre-Release of "{}"'.format(pushed_name)
     release_tag = "releasetag/"+pushed_name #avoid ambiguity in references in all cases
+    
+
+print("GITHUB_EVENT_PATH is {}".format(os.environ.get('GITHUB_EVENT_PATH',"")))
+print("GITHUB_HEAD_REF is {}".format(os.environ.get('GITHUB_HEAD_REF',"")))
+print("GITHUB_BASE_REF is {}".format(os.environ.get('GITHUB_BASE_REF',"")))
+print("GITHUB_API_URL is {}".format(os.environ.get('GITHUB_API_URL',"")))
+print("GITHUB_WORKSPACE is {}".format(os.environ.get('GITHUB_WORKSPACE',"")))
+print("REPO_NAME is {}".format(os.environ.get('REPO_NAME',"")))
+print("GITHUB_CONTEXT is {}".format(os.environ.get('GITHUB_CONTEXT',"")))
+print("GITHUB_REPOSITORY is {}".format(os.environ.get('GITHUB_REPOSITORY',"")))
+print("REPOSITORY_NAME is {}".format(os.environ.get('REPOSITORY_NAME',"")))
+
+if(fullref=="refs/heads/master"):
+    print("master-commit")
+    do_codeql = True
+if(os.environ.get('GITHUB_BASE_REF',"")=="refs/heads/master"):
+    print("master-pull-request")
+    do_codeql = True
+else:
+    print("no codeql necessary")
+    do_codeql = False
+
+
+publish_to_release = release_type[0]
+is_prerelease      = release_type[1]
 
 #helper function: set github variable and print it to console
 def set_github_variable(varname, varval):
@@ -113,4 +141,4 @@ set_github_variable("RELEASE_TAG", release_tag)
 set_github_variable("PUSHED_NAME", pushed_name)
 set_github_variable("JAMULUS_VERSION", release_version_name)
 set_github_variable("RELEASE_VERSION_NAME", release_version_name)
-set_github_variable("X_GITHUB_WORKSPACE", os.environ['GITHUB_WORKSPACE'])
+set_github_variable("DO_CODEQL", str(do_codeql).lower())

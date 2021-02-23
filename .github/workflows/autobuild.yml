@@ -37,10 +37,11 @@ jobs:
      name:                          Prepare Auto-Build/Release
      runs-on:                       ubuntu-20.04
      outputs:
-      publish_to_release:           ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
-      upload_url:                   ${{ steps.create_release_step.outputs.upload_url }}
+      do_codeql:                    ${{ steps.jamulus-build-vars.outputs.DO_CODEQL }}
       version:                      ${{ steps.jamulus-build-vars.outputs.JAMULUS_VERSION }}
       version_name:                 ${{ steps.jamulus-build-vars.outputs.RELEASE_VERSION_NAME }}
+      publish_to_release:           ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
+      upload_url:                   ${{ steps.create_release_step.outputs.upload_url }}
       x_github_workspace:           ${{ steps.jamulus-build-vars.outputs.X_GITHUB_WORKSPACE }} #needed, because matrix can not directly access ${{ github.workspace }} aparrently
 
 
@@ -54,10 +55,12 @@ jobs:
          - name:                    Get Jamulus build info, determine actions & variables
            run:                     python3 ${{ github.workspace }}/.github/actions_scripts/analyse_git_reference.py
            id:                      jamulus-build-vars
+           env:
+               REPO_NAME:           ${{ github.repository }}
 
          # remove release, if it exists (with this releasetag)
          - name:                    Remove release, if existing (for branches)
-           if:                      ${{ contains(steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE, 'true') }}
+           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
            continue-on-error:       true
            uses:                    dev-drprasad/delete-tag-and-release@v0.1.2
            with:
@@ -67,7 +70,7 @@ jobs:
              GITHUB_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
          # create release (empty, filled by next jobs)
          - name:                    'Create Release ${{steps.jamulus-build-vars.outputs.RELEASE_TAG}}  {{steps.jamulus-build-vars.outputs.RELEASE_TITLE}}'
-           if:                      ${{ contains(steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE, 'true') }}
+           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
            id:                      create_release_step
            uses:                    actions/create-release@v1
            env:
@@ -133,7 +136,7 @@ jobs:
              uses_codeql:           true
 
     runs-on:                        ${{ matrix.config.building_on_os }}
-    steps:
+    steps:        
       # Checkout code
       - name:                       Checkout code
         uses:                       actions/checkout@v2
@@ -151,14 +154,14 @@ jobs:
 
       # Initialize CodeQL tools for code-scanning for security
       - name:                       Initialize CodeQL
-        if:                         matrix.config.uses_codeql
+        if:                         ${{ contains(needs.create_release.outputs.do_codeql, 'true') && contains(matrix.config.uses_codeql, 'true') }}
         uses:                       github/codeql-action/init@v1
         with:
           languages: 'cpp'
           # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python' ]
           # Learn more:
           # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
-
+      
       # Build
       - name:                       "Build for ${{ matrix.config.config_name }}"
         if:                         ${{ matrix.config.cmd2_build }}
@@ -222,6 +225,6 @@ jobs:
 
       # Run CodeQL tools for code-scanning for security
       - name:                       Perform CodeQL Analysis
-        if:                         matrix.config.uses_codeql
+        if:                         ${{ contains(needs.create_release.outputs.do_codeql, 'true') && contains(matrix.config.uses_codeql, 'true') }}
         uses:                       github/codeql-action/analyze@v1
 
