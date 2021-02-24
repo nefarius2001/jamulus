@@ -31,6 +31,17 @@ debuild -b -us -uc
 
 mkdir deploy
 
+echo ""
+echo ""
+echo "ls ."
+ls .
+
+echo ""
+echo ""
+echo "ls .."
+ls ..
+
+
 if [ "${1}" = "headless" ]; then
   mv "../jamulus-headless*_amd64.deb" deploy/
 else
