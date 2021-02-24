@@ -69,9 +69,9 @@ os.system('perl "{}"/.github/actions_scripts/getChangelog.pl "{}"/ChangeLog "{}"
 ))
 
 #release types: [ publish_to_release, is_prerelease ]
-RELEASE_TYPE_NONE       = [ False, True ]
-RELEASE_TYPE_RELEASE    = [ True, False ]
-RELEASE_TYPE_PRERELEASE = [ True, True ]
+RELEASE_TYPE_NONE       = [ 0, True ]
+RELEASE_TYPE_RELEASE    = [ 1, False ]
+RELEASE_TYPE_PRERELEASE = [ 1, True ]
 
 # decisions about release, prerelease, title and tag
 release_type = RELEASE_TYPE_NONE
@@ -134,7 +134,7 @@ def set_github_variable(varname, varval):
     print("::set-output name={}::{}".format(varname, varval))
 
 #set github-available variables
-set_github_variable("PUBLISH_TO_RELEASE", str(publish_to_release).lower())
+set_github_variable("PUBLISH_TO_RELEASE", publish_to_release)
 set_github_variable("IS_PRERELEASE", str(is_prerelease).lower())
 set_github_variable("RELEASE_TITLE", release_title)
 set_github_variable("RELEASE_TAG", release_tag) 
