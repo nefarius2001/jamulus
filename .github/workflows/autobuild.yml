@@ -34,7 +34,7 @@ on:
 name:                               Auto-Build
 jobs:
   preparations:
-     name:                          Preparation: Decisions
+     name:                          Preparation-Decisions
      runs-on:                       ubuntu-20.04
      outputs:
       do_codeql:                    ${{ steps.jamulus-build-vars.outputs.DO_CODEQL }}
