@@ -34,7 +34,7 @@ on:
 name:                               Auto-Build
 jobs:
   preparations:
-     name:                          Prepare Auto-Build/Release
+     name:                          Preparation: Decisions
      runs-on:                       ubuntu-20.04
      outputs:
       do_codeql:                    ${{ steps.jamulus-build-vars.outputs.DO_CODEQL }}
@@ -59,6 +59,7 @@ jobs:
   create_release:
     name:                           Create Release
     needs:                          preparations
+    if:                             ${{ contains(needs.preparations.outputs.PUBLISH_TO_RELEASE, 'true') }}
     runs-on:                        ubuntu-20.04
     outputs:
       publish_to_release:           ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
