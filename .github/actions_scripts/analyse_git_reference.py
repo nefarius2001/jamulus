@@ -14,6 +14,17 @@ import sys
 import os
 import subprocess
 
+###############
+## constants ##
+###############
+#release types: [ publish_to_release, is_prerelease ]
+RELEASE_TYPE_NONE       = [ False, True ]
+RELEASE_TYPE_RELEASE    = [ True, False ]
+RELEASE_TYPE_PRERELEASE = [ True, True ]
+
+###############
+## functions ##
+###############
 # get the jamulus version from the .pro file
 def get_jamulus_version(repo_path_on_disk):
     jamulus_version = ""
@@ -34,6 +45,11 @@ def get_git_hash():
     #return subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     #return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'])
 
+
+
+###############
+##   main    ##
+###############
 if len(sys.argv) == 1:
    pass
 else:
@@ -56,12 +72,12 @@ print("")
 repo_path_on_disk = os.environ['GITHUB_WORKSPACE'] 
 
 # derive git related variables
-version_from_changelog = get_jamulus_version(repo_path_on_disk)
-if "dev" in version_from_changelog:
-    release_version_name = "{}-{}".format(version_from_changelog, get_git_hash())
+version_from_pro_file = get_jamulus_version(repo_path_on_disk)
+if "dev" in version_from_pro_file:
+    release_version_name = "{}-{}".format(version_from_pro_file, get_git_hash())
     print("building an intermediate version: ", release_version_name)
 else:
-    release_version_name = version_from_changelog
+    release_version_name = version_from_pro_file
     print("building a release version: ", release_version_name)
 
 
@@ -74,14 +90,10 @@ pushed_name = reflist[2]
 os.system('perl "{}"/.github/actions_scripts/getChangelog.pl "{}"/ChangeLog "{}" > "{}"/autoLatestChangelog.md'.format(
     os.environ['GITHUB_WORKSPACE'],
     os.environ['GITHUB_WORKSPACE'],
-    version_from_changelog,
+    version_from_pro_file,
     os.environ['GITHUB_WORKSPACE']
 ))
 
-#release types: [ publish_to_release, is_prerelease ]
-RELEASE_TYPE_NONE       = [ False, True ]
-RELEASE_TYPE_RELEASE    = [ True, False ]
-RELEASE_TYPE_PRERELEASE = [ True, True ]
 
 # decisions about release, prerelease, title and tag
 release_type = RELEASE_TYPE_NONE

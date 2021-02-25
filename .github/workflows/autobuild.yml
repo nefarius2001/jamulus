@@ -75,12 +75,6 @@ jobs:
              tag_name:              ${{ needs.preparations.outputs.RELEASE_TAG }}
            env:
              GITHUB_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
-             aaa:                   ${{ needs.preparations.outputs.PUBLISH_TO_RELEASE }}
-             bbb:                   ${{ !(needs.preparations.outputs.PUBLISH_TO_RELEASE) }}
-             ccc:                   ${{ !(!(needs.preparations.outputs.PUBLISH_TO_RELEASE)) }}
-             xx:                    ${{ contains(needs.preparations.outputs.PUBLISH_TO_RELEASE, 'true') }}
-             yy:                    ${{ needs.preparations.outputs.PUBLISH_TO_RELEASE == 'true' }}
-             zz:                    ${{ needs.preparations.outputs.PUBLISH_TO_RELEASE == true }}
          # create release (empty, filled by next jobs)
          - name:                    'Create Release ${{steps.jamulus-build-vars.outputs.RELEASE_TAG}}  {{steps.jamulus-build-vars.outputs.RELEASE_TITLE}}'
            if:                      ${{ needs.preparations.outputs.PUBLISH_TO_RELEASE == 'true' }}
