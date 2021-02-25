@@ -101,6 +101,22 @@ jobs:
          #  run:                     myundefinedfunction
 
 
+  debugggg:
+    name:                           Build assets for ${{ matrix.config.config_name }}
+    needs:                          [create_release, preparations]
+    if:                             always()
+
+    runs-on:                        ubuntu-18.04
+    steps:        
+      # Checkout code
+      - name:                       Debug variables
+        run:                        echo Hello World!
+        env:
+          aaa:                      ${{ needs.preparations.result }}
+          bbb:                      ${{ needs.create_release.result }}
+          ccc:                      ${{ needs.create_release.outputs.upload_url }}
+          ddd:                      ${{ needs.preparations.result == 'success' }}
+
   release_assets:
     name:                           Build assets for ${{ matrix.config.config_name }}
     needs:                          [create_release, preparations]
@@ -158,15 +174,7 @@ jobs:
              uses_codeql:           true
 
     runs-on:                        ${{ matrix.config.building_on_os }}
-    steps:        
-      # Checkout code
-      - name:                       Debug variables
-        run:                        echo Hello World!
-        env:
-          aaa:                      ${{ needs.preparations.result }}
-          bbb:                      ${{ needs.create_release.result }}
-          ccc:                      ${{ needs.create_release.outputs.upload_url }}
-          ddd:                      ${{ needs.preparations.result == 'success' }}
+    steps:
     
       # Checkout code
       - name:                       Checkout code
