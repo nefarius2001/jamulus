@@ -60,7 +60,7 @@ jobs:
 
          # remove release, if it exists (with this releasetag)
          - name:                    Remove release, if existing (for branches)
-           if:                      contains(${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}, 'true')
+           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
            continue-on-error:       true
            uses:                    dev-drprasad/delete-tag-and-release@v0.1.2
            with:
@@ -68,9 +68,12 @@ jobs:
              tag_name:              ${{ steps.jamulus-build-vars.outputs.RELEASE_TAG }}
            env:
              GITHUB_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
+             aaa:                   ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
+             bbb:                   ${{ !(steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE) }}
+             ccc:                   ${{ !(!(steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE)) }}
          # create release (empty, filled by next jobs)
          - name:                    'Create Release ${{steps.jamulus-build-vars.outputs.RELEASE_TAG}}  {{steps.jamulus-build-vars.outputs.RELEASE_TITLE}}'
-           if:                      contains(${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}, 'true')
+           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
            id:                      create_release_step
            uses:                    actions/create-release@v1
            env:
