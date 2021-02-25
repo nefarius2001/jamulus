@@ -119,7 +119,7 @@ else:
 if(fullref=="refs/heads/master"):
     print("master-commit")
     do_codeql = True
-if(os.environ.get('GITHUB_BASE_REF',"")=="refs/heads/master"):
+elif(os.environ.get('GITHUB_BASE_REF',"")=="refs/heads/master"):
     print("master-pull-request")
     do_codeql = True
 else:
