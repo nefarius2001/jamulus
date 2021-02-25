@@ -63,8 +63,7 @@ jobs:
     outputs:
       publish_to_release:           ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
       upload_url:                   ${{ steps.create_release_step.outputs.upload_url }}
-
-     steps:
+      steps:
          # remove release, if it exists (with this releasetag)
          - name:                    Remove release, if existing (for branches)
            if:                      ${{ contains(needs.preparations.outputs.PUBLISH_TO_RELEASE, 'true') }}
