@@ -42,6 +42,16 @@ else:
     print('Argument List:', str(sys.argv))
     raise Exception("wrong agruments")
     
+    
+print("")
+print("GITHUB_REF is {}".format(os.environ.get('GITHUB_REF',"")))
+print("GITHUB_HEAD_REF is {}".format(os.environ.get('GITHUB_HEAD_REF',"")))
+print("GITHUB_BASE_REF is {}".format(os.environ.get('GITHUB_BASE_REF',"")))
+print("GITHUB_WORKSPACE is {}".format(os.environ.get('GITHUB_WORKSPACE',"")))
+print("GITHUB_REPOSITORY is {}".format(os.environ.get('GITHUB_REPOSITORY',"")))
+print("")
+    
+    
 # derive workspace-path
 repo_path_on_disk = os.environ['GITHUB_WORKSPACE'] 
 
@@ -102,12 +112,6 @@ else:
     release_type = RELEASE_TYPE_NONE
     release_title='Pre-Release of "{}"'.format(pushed_name)
     release_tag = "releasetag/"+pushed_name #avoid ambiguity in references in all cases
-    
-
-print("GITHUB_HEAD_REF is {}".format(os.environ.get('GITHUB_HEAD_REF',"")))
-print("GITHUB_BASE_REF is {}".format(os.environ.get('GITHUB_BASE_REF',"")))
-print("GITHUB_WORKSPACE is {}".format(os.environ.get('GITHUB_WORKSPACE',"")))
-print("GITHUB_REPOSITORY is {}".format(os.environ.get('GITHUB_REPOSITORY',"")))
 
 #if codeql is only wanted on main repo, use next line
 # if(GITHUB_REPOSITORY=="jamulussoftware/jamulus"):
@@ -138,6 +142,7 @@ def set_github_variable(varname, varval):
     print("{}='{}'".format(varname, varval)) #console output
     print("::set-output name={}::{}".format(varname, varval))
 
+print("")
 #set github-available variables
 set_github_variable("PUBLISH_TO_RELEASE", publish_to_release)
 set_github_variable("IS_PRERELEASE", is_prerelease)

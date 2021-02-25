@@ -58,7 +58,7 @@ jobs:
 
          # remove release, if it exists (with this releasetag)
          - name:                    Remove release, if existing (for branches)
-           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
+           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE == 'true' }}
            continue-on-error:       true
            uses:                    dev-drprasad/delete-tag-and-release@v0.1.2
            with:
@@ -73,7 +73,7 @@ jobs:
              yy:                    ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE == 'true' }}
          # create release (empty, filled by next jobs)
          - name:                    'Create Release ${{steps.jamulus-build-vars.outputs.RELEASE_TAG}}  {{steps.jamulus-build-vars.outputs.RELEASE_TITLE}}'
-           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
+           if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE == 'true' }}
            id:                      create_release_step
            uses:                    actions/create-release@v1
            env:
