@@ -72,7 +72,7 @@ jobs:
            uses:                    dev-drprasad/delete-tag-and-release@v0.1.2
            with:
              delete_release:        true
-             tag_name:              ${{ steps.jamulus-build-vars.outputs.RELEASE_TAG }}
+             tag_name:              ${{ needs.preparations.outputs.RELEASE_TAG }}
            env:
              GITHUB_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
              aaa:                   ${{ needs.preparations.outputs.PUBLISH_TO_RELEASE }}
