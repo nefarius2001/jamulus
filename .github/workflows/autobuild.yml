@@ -100,27 +100,6 @@ jobs:
          #- name:                    Cancelthrougherroe
          #  run:                     myundefinedfunction
 
-
-  debugggg:
-    name:                           debug variables
-    needs:                          [create_release, preparations]
-    if:                             always()
-
-    runs-on:                        ubuntu-18.04
-    steps:        
-      # Checkout code
-      - name:                       Debug variables
-        run:                        echo Hello World!
-        env:
-          aaa:                      ${{ needs.preparations.result }}
-          bbb:                      ${{ needs.create_release.result }}
-          ccc:                      ${{ needs.create_release.outputs.upload_url }}
-          ddd:                      ${{ needs.preparations.result == 'success' }}
-          eee:                      ${{ ( needs.preparations.result == 'success' ) }}
-          fff:                      ${{ ( needs.create_release.result == 'success' ) }}
-          ggg:                      ${{ ( needs.create_release.result == 'skipped' ) }}
-          hhh:                      ${{ ((needs.create_release.result == 'success') || (needs.create_release.result == 'skipped')) }}
-
   release_assets:
     name:                           Build assets for ${{ matrix.config.config_name }}
     needs:                          [create_release, preparations]
