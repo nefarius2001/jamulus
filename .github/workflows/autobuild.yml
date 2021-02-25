@@ -120,8 +120,6 @@ jobs:
           fff:                      ${{ ( needs.create_release.result == 'success' ) }}
           ggg:                      ${{ ( needs.create_release.result == 'skipped' ) }}
           hhh:                      ${{ ((needs.create_release.result == 'success') || (needs.create_release.result == 'skipped')) }}
-          iii:                      ${{ success() }}
-          jjj:                      ${{ always() }}
 
   release_assets:
     name:                           Build assets for ${{ matrix.config.config_name }}
