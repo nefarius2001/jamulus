@@ -160,6 +160,15 @@ jobs:
     runs-on:                        ${{ matrix.config.building_on_os }}
     steps:        
       # Checkout code
+      - name:                       Debug variables
+        run:                        echo Hello World!
+        env:
+          aaa:                      ${{ needs.preparations.result }}
+          bbb:                      ${{ needs.create_release.result }}
+          ccc:                      ${{ needs.create_release.outputs.upload_url }}
+          ddd:                      ${{ needs.preparations.result == 'success' }}
+    
+      # Checkout code
       - name:                       Checkout code
         uses:                       actions/checkout@v2
         with:
