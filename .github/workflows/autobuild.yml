@@ -102,7 +102,7 @@ jobs:
 
 
   debugggg:
-    name:                           Build assets for ${{ matrix.config.config_name }}
+    name:                           debug variables
     needs:                          [create_release, preparations]
     if:                             always()
 
@@ -116,6 +116,10 @@ jobs:
           bbb:                      ${{ needs.create_release.result }}
           ccc:                      ${{ needs.create_release.outputs.upload_url }}
           ddd:                      ${{ needs.preparations.result == 'success' }}
+          eee:                      ${{ ( needs.preparations.result == 'success' ) }}
+          fff:                      ${{ ( needs.create_release.result == 'success' ) }}
+          ggg:                      ${{ ( needs.create_release.result == 'skipped' ) }}
+          hhh:                      ${{ ((needs.create_release.result == 'success') || (needs.create_release.result == 'skipped')) }}
 
   release_assets:
     name:                           Build assets for ${{ matrix.config.config_name }}
