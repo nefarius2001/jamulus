@@ -69,6 +69,8 @@ jobs:
              aaa:                   ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
              bbb:                   ${{ !(steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE) }}
              ccc:                   ${{ !(!(steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE)) }}
+             xx:                    ${{ contains(steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE, 'true') }}
+             yy:                    ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE == 'true' }}
          # create release (empty, filled by next jobs)
          - name:                    'Create Release ${{steps.jamulus-build-vars.outputs.RELEASE_TAG}}  {{steps.jamulus-build-vars.outputs.RELEASE_TITLE}}'
            if:                      ${{ steps.jamulus-build-vars.outputs.PUBLISH_TO_RELEASE }}
