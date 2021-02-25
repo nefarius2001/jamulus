@@ -128,11 +128,12 @@ is_prerelease      = release_type[1]
 
 #helper function: set github variable and print it to console
 def set_github_variable(varname, varval):
+    print(type(varval))
     print("{}='{}'".format(varname, varval)) #console output
     print("::set-output name={}::{}".format(varname, varval))
 
 #set github-available variables
-set_github_variable("PUBLISH_TO_RELEASE", publish_to_release)
+set_github_variable("PUBLISH_TO_RELEASE", str(publish_to_release).lower())
 set_github_variable("IS_PRERELEASE", str(is_prerelease).lower())
 set_github_variable("RELEASE_TITLE", release_title)
 set_github_variable("RELEASE_TAG", release_tag) 
