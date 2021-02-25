@@ -69,9 +69,9 @@ os.system('perl "{}"/.github/actions_scripts/getChangelog.pl "{}"/ChangeLog "{}"
 ))
 
 #release types: [ publish_to_release, is_prerelease ]
-RELEASE_TYPE_NONE       = [ 0, True ]
-RELEASE_TYPE_RELEASE    = [ 1, False ]
-RELEASE_TYPE_PRERELEASE = [ 1, True ]
+RELEASE_TYPE_NONE       = [ False, True ]
+RELEASE_TYPE_RELEASE    = [ True, False ]
+RELEASE_TYPE_PRERELEASE = [ True, True ]
 
 # decisions about release, prerelease, title and tag
 release_type = RELEASE_TYPE_NONE
@@ -104,15 +104,13 @@ else:
     release_tag = "releasetag/"+pushed_name #avoid ambiguity in references in all cases
     
 
-print("GITHUB_EVENT_PATH is {}".format(os.environ.get('GITHUB_EVENT_PATH',"")))
 print("GITHUB_HEAD_REF is {}".format(os.environ.get('GITHUB_HEAD_REF',"")))
 print("GITHUB_BASE_REF is {}".format(os.environ.get('GITHUB_BASE_REF',"")))
-print("GITHUB_API_URL is {}".format(os.environ.get('GITHUB_API_URL',"")))
 print("GITHUB_WORKSPACE is {}".format(os.environ.get('GITHUB_WORKSPACE',"")))
-print("REPO_NAME is {}".format(os.environ.get('REPO_NAME',"")))
-print("GITHUB_CONTEXT is {}".format(os.environ.get('GITHUB_CONTEXT',"")))
 print("GITHUB_REPOSITORY is {}".format(os.environ.get('GITHUB_REPOSITORY',"")))
-print("REPOSITORY_NAME is {}".format(os.environ.get('REPOSITORY_NAME',"")))
+
+#if codeql is only wanted on main repo, use next line
+# if(GITHUB_REPOSITORY=="jamulussoftware/jamulus"):
 
 if(fullref=="refs/heads/master"):
     print("master-commit")

@@ -55,8 +55,6 @@ jobs:
          - name:                    Get Jamulus build info, determine actions & variables
            run:                     python3 ${{ github.workspace }}/.github/actions_scripts/analyse_git_reference.py
            id:                      jamulus-build-vars
-           env:
-               REPO_NAME:           ${{ github.repository }}
 
          # remove release, if it exists (with this releasetag)
          - name:                    Remove release, if existing (for branches)
