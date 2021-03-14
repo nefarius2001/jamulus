@@ -74,12 +74,9 @@ public:
 
     static QString GetPaApiNames();
 
-
 #ifdef WIN32
     virtual void OpenDriverSetup();
-    bool HasControlPanel() { return strSelectApiName.compare ( "ASIO", Qt::CaseInsensitive ) == 0; }
-#else
-    bool HasControlPanel() { return false; }
+    virtual bool HasControlPanel() { return strSelectApiName.compare ( "ASIO", Qt::CaseInsensitive ) == 0; }
 #endif // WIN32
 
 protected:
