@@ -435,7 +435,12 @@ CAboutDlg::CAboutDlg ( QWidget* parent ) : CBaseDlg ( parent )
         "<p>" + tr ( "Some pixmaps are from the" ) + " Open Clip Art Library (OCAL), "
         "<i><a href=\"http://openclipart.org\">http://openclipart.org</a></i></p>"
         "<p>" + tr ( "Country flag icons by Mark James" ) +
-        ", <i><a href=\"http://www.famfamfam.com\">http://www.famfamfam.com</a></i></p>" );
+        ", <i><a href=\"http://www.famfamfam.com\">http://www.famfamfam.com</a></i></p>"
+#ifdef USE_PORTAUDIO
+        "<p>" + tr ( "PortAudio - Portable Cross-platform Audio I/O" ) +
+        ", <i><a href=\"http://www.portaudio.com/\">http://www.portaudio.com/</a></i></p>"
+#endif // USE_PORTAUDIO
+        );
 
     // contributors list
     txvContributors->setText (

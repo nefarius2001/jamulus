@@ -1159,7 +1159,7 @@ CONFIG(portaudio) {
         CONFIG(portaudio_shared_lib) {
             LIBS += $$libnames(portaudio)
         } else {
-            DEFINES += PA_USE_ASIO=1
+            DEFINES += PA_USE_ASIO=1 PA_USE_WASAPI=1 PA_USE_WDMKS=1
             INCLUDEPATH += $$INCLUDEPATH_PORTAUDIO
             HEADERS += $$HEADERS_PORTAUDIO
             mingw {

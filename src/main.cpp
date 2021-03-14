@@ -87,6 +87,7 @@ int main ( int argc, char** argv )
     QString      strServerListFilter         = "";
     QString      strWelcomeMessage           = "";
     QString      strClientName               = "";
+    QString      strApiName                  = "";
 
 #if !defined(HEADLESS) && defined(_WIN32)
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
@@ -285,6 +286,21 @@ int main ( int argc, char** argv )
             continue;
         }
 
+#ifdef USE_PORTAUDIO
+        if ( GetStringArgument ( argc,
+                                 argv,
+                                 i,
+                                 "--api",
+                                 "--api",
+                                 strArgument ) )
+        {
+            strApiName = strArgument;
+            qInfo() << QString ( "- PortAudio API: %1" )
+                .arg ( strApiName );
+            CommandLineOptions << "--api";
+            continue;
+        }
+#endif // USE_PORTAUDIO
 
         // Use logging ---------------------------------------------------------
         if ( GetStringArgument ( argc,
@@ -676,7 +692,11 @@ int main ( int argc, char** argv )
                              strConnOnStartupAddress,
                              strMIDISetup,
                              bNoAutoJackConnect,
+#if defined (_WIN32) && defined (USE_PORTAUDIO)
+                             strApiName, // TODO: don't abuse Jack client name for this.
+#else
                              strClientName,
+#endif
                              bMuteMeInPersonalMix );
 
             // load settings from init-file (command line options override)
@@ -855,6 +875,10 @@ QString UsageArguments ( char **argv )
         "  -j, --nojackconnect   disable auto Jack connections\n"
         "      --ctrlmidich      MIDI controller channel to listen\n"
         "      --clientname      client name (window title and jack client name)\n"
+#ifdef USE_PORTAUDIO
+        "      --api             choose which PortAudio API to use, possible choices:\n"
+        "                        " + CSound::GetPaApiNames() + "\n"
+#endif // USE_PORTAUDIO
         "\nExample: " + QString ( argv[0] ) + " -s --inifile myinifile.ini\n";
 }
 
