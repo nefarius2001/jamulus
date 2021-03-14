@@ -29,6 +29,11 @@ CONFIG (noportaudio) {
     CONFIG -= portaudio
 }
 
+CONFIG (portaudio) {
+    message("driver WINDOWS portaudio")
+}else{
+    message("driver WINDOWS standard")
+}
 
 QT += network \
     xml \
