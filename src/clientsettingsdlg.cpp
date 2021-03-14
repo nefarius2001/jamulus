@@ -290,12 +290,14 @@ CClientSettingsDlg::CClientSettingsDlg ( CClient*         pNCliP,
 
 
     // init driver button
-#ifdef _WIN32
-    butDriverSetup->setText ( tr ( "ASIO Device Settings" ) );
-#else
-    // no use for this button for MacOS/Linux right now -> hide it
-    butDriverSetup->hide();
-#endif
+    if ( pNCliP->HasControlPanel() )
+    {
+        butDriverSetup->setText ( tr ( "ASIO Device Settings" ) );
+    }
+    else
+    {
+        butDriverSetup->hide();
+    }
 
     // init delay and other information controls
     ledNetw->Reset();
